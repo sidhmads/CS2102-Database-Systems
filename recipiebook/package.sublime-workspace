@@ -1,0 +1,262 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"desc",
+				"description2"
+			],
+			[
+				"tran",
+				"translateY()"
+			],
+			[
+				"des",
+				"description2"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"tex",
+				"text-align"
+			],
+			[
+				"alig",
+				"align-self"
+			],
+			[
+				"wi",
+				"width"
+			],
+			[
+				"ali",
+				"align-self"
+			],
+			[
+				"back",
+				"background-position"
+			],
+			[
+				"backgr",
+				"background-color"
+			],
+			[
+				"size",
+				"font-size"
+			],
+			[
+				"try",
+				"try\tTry/Except"
+			],
+			[
+				"wri",
+				"writer"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 198.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/sival/Desktop/2103/addressbook-level2/test/expected.txt",
+		"/C/Users/sival/Desktop/2103/addressbook-level2/test/actual.txt",
+		"/C/Users/sival/Desktop/Driven Website/index.html",
+		"/C/Users/sival/Desktop/Driven Website/css/style.css",
+		"/C/Users/sival/Desktop/Driven/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/right-mobile-layout/dark/video-bg/indextest.html",
+		"/C/Users/sival/Desktop/Driven/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/right-mobile-layout/dark/video-bg/css/style.css",
+		"/C/Users/sival/Desktop/Driven/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/right-mobile-layout/dark/video-bg/test.html",
+		"/C/Users/sival/Desktop/Driven/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/right-mobile-layout/dark/video-bg/index.html",
+		"/C/Users/sival/Desktop/Driven/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/index - Copy.html",
+		"/C/Users/sival/Desktop/2100/LAB/lab2b.c",
+		"/C/Users/sival/Desktop/2100/LAB/lab2a.c",
+		"/C/Users/sival/Desktop/AnyFood/foodFinder2.js",
+		"/C/Users/sival/Desktop/AnyFood/Price.html",
+		"/C/Users/sival/Desktop/bootstrap_cheatsheet/index.html",
+		"/C/Users/sival/Desktop/video-bg/index - Copy.html",
+		"/C/Users/sival/Desktop/AnyFood/Thankyou.html",
+		"/C/Users/sival/Desktop/AnyFood/Admin.html",
+		"/C/Users/sival/Desktop/AnyFood/AnyFood.html",
+		"/C/Users/sival/Desktop/bootstrap_cheatsheet/parallax_demo.htm",
+		"/C/Users/sival/Desktop/bootstrap_cheatsheet/AnyFood.html",
+		"/C/Users/sival/Desktop/bootstrap_cheatsheet/index - Copy.html",
+		"/C/Users/sival/Desktop/Surprise.html",
+		"/C/Users/sival/Desktop/Driven/HTML/bootstrap_cheatsheet/index.html",
+		"/C/Users/sival/Desktop/MyChromeExt/popup.js",
+		"/C/Users/sival/Desktop/MyChromeExt/popup.html",
+		"/C/Users/sival/Desktop/SIVA/MY OWN PROJECTS/NUS JUDO/ATTENDANCE_EDITOR.py",
+		"/C/Users/sival/Desktop/hellowworld.py",
+		"/C/Users/sival/Desktop/2102/Assignments/cs2102-assign1/CS2101 Ass1.py",
+		"/C/Users/sival/Desktop/test.py",
+		"/C/Users/sival/Desktop/CS2101 Ass1.py",
+		"/C/Users/sival/Desktop/Driven/HTML/htmltest.html",
+		"/C/Users/sival/Desktop/Driven/HTML/jstest",
+		"/C/Users/sival/Desktop/Driven/HTML/csstest.css",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/font-awesome/css/font-awesome.min.css",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/font-awesome/css/font-awesome.css",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/css/style.css",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/index - Copy.html",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/js/modernizr.custom.min.js",
+		"/C/Users/sival/Desktop/themeforest-9800403-responsive-bootstrap-app-landing-page/mix-theme/HTML/middle-mobile-layout/dark/video-bg/index.html",
+		"/C/Users/sival/Desktop/CS1010S(TUTOR)/claim (1).txt",
+		"/C/Users/sival/Desktop/Driven/HTML/codeacademy_tut.html",
+		"/C/Users/sival/Desktop/Driven/htmltest.html",
+		"/C/Users/sival/Desktop/csstest.css",
+		"/C/Users/sival/Downloads/headers/index.html",
+		"/C/Users/sival/Desktop/sublimetest.py",
+		"/C/Users/sival/Desktop/htmltest.html"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 35.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "package.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 225.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
