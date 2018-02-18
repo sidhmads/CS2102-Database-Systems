@@ -1,8 +1,7 @@
 $(document).ready(()=> {
 
   $('.delete-recipe').click(() => {
-    var id = this.document.activeElement.id; // got a prob in this line
-    console.log(this.document.activeElement.id);
+    var id = this.document.activeElement.id;
     var url = '/delete/' + id;
     if(confirm('Delete Recipe?')) {
       $.ajax({
@@ -19,8 +18,7 @@ $(document).ready(()=> {
     }
   });
 
-  $('.edit-recipe').click(()=>{
-    console.log(this);
+  $('.edit-recipe').click(() => {
     $('#edit-form-name').val(this.document.activeElement.dataset.name);
     $('#edit-form-ingredients').val(this.document.activeElement.dataset.ingredients);
     $('#edit-form-directions').val(this.document.activeElement.dataset.directions);
