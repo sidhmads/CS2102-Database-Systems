@@ -1,6 +1,6 @@
 $(document).ready(()=> {
   $('.delete-recipe').on('click', () => {
-    var id = $(this).data('id');
+    var id = $(this).data('id'); // got a prob in this line
     var url = '/delete/' + id;
     if(confirm('Delete Recipe?')) {
       $.ajax({
@@ -8,7 +8,7 @@ $(document).ready(()=> {
         type: 'DELETE',
         success: (result) => {
           console.log('Deleting Recipe...')
-          // window.location.href="/";
+          window.location.href="/";
         },
         error: (err) => {
           console.log(err);
