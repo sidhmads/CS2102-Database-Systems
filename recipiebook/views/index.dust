@@ -1,0 +1,8 @@
+{>"layout" /}
+
+{<body}
+	This is body
+	{#recipies}
+		{name}
+	{/recipies}
+{/body}
