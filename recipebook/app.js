@@ -52,6 +52,12 @@ app.post('/add', (req,res) => {
   res.redirect('/');
 });
 
+app.post('/edit', (req,res) => {
+  client.query('UPDATE recipes SET name=$1, ingredients=$2, directions=$3 WHERE id=$4',
+  [req.body.name, req.body.ingredients, req.body.directions, req.body.id]);
+  res.redirect('/');
+});
+
 app.delete('/delete/:id',(req,res) => {
   console.log(req.params);
   client.query('DELETE FROM recipes WHERE id = $1',
