@@ -16,7 +16,8 @@ const { Pool, Client } = require('pg')
 //   port: 5432,
 //   ssl: 'require',
 // })
-const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
+// const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
+const connectionString = 'postgresql://e0015909:group-24@psql1.comp.nus.edu.sg:5432/cs2102';
 // const connectionString = 'postgres://gjnvmnraolubxm:84b35575558f2fe073f8ba6cc349a4e1f5295c252f83d4fe7e18a3d33c8ed4f4@ec2-54-235-64-195.compute-1.amazonaws.com:5432/dbj8jp9pamqb64';
 const pool = new Pool({
   connectionString: connectionString,
@@ -25,14 +26,7 @@ pool.query('SELECT NOW()', (err, res) => {
   console.log(err, res)
   pool.end()
 })
-// const client = new Client({
-//   user: 'gjnvmnraolubxm',
-//   host: 'ec2-54-235-64-195.compute-1.amazonaws.com',
-//   database: 'dbj8jp9pamqb64',
-//   password: '84b35575558f2fe073f8ba6cc349a4e1f5295c252f83d4fe7e18a3d33c8ed4f4',
-//   port: 5432,
-//   ssl: 'require',
-// })
+
 const client = new Client({
   connectionString: connectionString,
 })
