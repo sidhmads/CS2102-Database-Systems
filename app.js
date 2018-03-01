@@ -8,37 +8,37 @@ var express = require('express'),
 
 // DB Connect String
 const { Pool, Client } = require('pg')
-const pool = new Pool({
-  user: 'gjnvmnraolubxm',
-  host: 'ec2-54-235-64-195.compute-1.amazonaws.com',
-  database: 'dbj8jp9pamqb64',
-  password: '84b35575558f2fe073f8ba6cc349a4e1f5295c252f83d4fe7e18a3d33c8ed4f4',
-  port: 5432,
-  ssl: 'require'
-});
-// const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
+// const pool = new Pool({
+//   user: 'gjnvmnraolubxm',
+//   host: 'ec2-54-235-64-195.compute-1.amazonaws.com',
+//   database: 'dbj8jp9pamqb64',
+//   password: '84b35575558f2fe073f8ba6cc349a4e1f5295c252f83d4fe7e18a3d33c8ed4f4',
+//   port: 5432,
+//   ssl: 'require'
+// });
+const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
 // const connectionString = 'postgresql://e0015909:group-24@psql1.comp.nus.edu.sg:5432/cs2102';
 // const connectionString = 'postgres://zmoghsxduyicpd:2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f@ec2-174-129-221-240.compute-1.amazonaws.com:5432/dbi701jafqoq2a';
-// const pool = new Pool({
-//   connectionString: connectionString,
-// })
+const pool = new Pool({
+  connectionString: connectionString,
+})
 pool.query('SELECT NOW()', (err, res) => {
   console.log(err, res)
   pool.end()
 })
 
-var client = new pg.Client({
-    user: "zmoghsxduyicpd",
-    password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
-    database: "dbi701jafqoq2a",
-    port: 5432,
-    host: "ec2-174-129-221-240.compute-1.amazonaws.com",
-    ssl: 'require'
-});
+// var client = new pg.Client({
+//     user: "zmoghsxduyicpd",
+//     password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
+//     database: "dbi701jafqoq2a",
+//     port: 5432,
+//     host: "ec2-174-129-221-240.compute-1.amazonaws.com",
+//     ssl: 'require'
+// });
 
-// const client = new Client({
-//   connectionString: connectionString,
-// })
+const client = new Client({
+  connectionString: connectionString,
+})
 client.connect((err) => {
   if (err) {
     console.error('connection error', err.stack)
@@ -61,15 +61,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', function(req, res) {
-  client.query('SELECT * FROM recipes', (err, result) => {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    res.render('index', {recipes: result.rows});
-    // client.end()
-  });
+app.get('/', (req, res) => {
+  res.render('homepage');
 });
+
+// app.get('/', function(req, res) {
+//   client.query('SELECT * FROM recipes', (err, result) => {
+//     if(err) {
+//       return console.error('error running query', err);
+//     }
+//     res.render('index', {recipes: result.rows});
+//     // client.end()
+//   });
+// });
 
 app.get('/search/:name', (req,res) => {
   client.query('SELECT * FROM recipes WHERE name = $1' , [req.params.name], (err, result) => {
@@ -105,9 +109,9 @@ app.delete('/delete/:id',(req,res) => {
 // Server
 
 // heroku
-app.listen(process.env.PORT);
+// app.listen(process.env.PORT);
 
 // localhost
-// app.listen(3000, function() {
-//   console.log('Server Started on Port 3000');
-// });
+app.listen(3000, function() {
+  console.log('Server Started on Port 3000');
+});
