@@ -1,0 +1,72 @@
+{>"layout" /}
+
+{<style}
+  <link rel="stylesheet" href="/css/startpage.css" />
+{/style}
+
+{<body}
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><img src="/images/Shareit.jpeg" height="50px"></a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavBar">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#">Profile</a></li>
+          <li><a href="#">Settings</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container text-center">
+    <h2>Our Categories</h2>
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="/images/electronics.png" id="icon">
+        <h4>Electronics</h4>
+      </div>
+      <div class="col-sm-4">
+        <img src="/images/clothing.png" id="icon">
+        <h4>Clothing</h4>
+      </div>
+      <div class="col-sm-4">
+        <img src="/images/books.png" id="icon">
+        <h4>Books</h4>
+      </div>
+      <div class="col-sm-4">
+        <img src="/images/toys.png" id="icon">
+        <h4>Toys & Games</h4>
+      </div>
+      <div class="col-sm-4">
+        <img src="/images/others.png" id="icon">
+        <h4>Others</h4>
+      </div>
+    </div>
+  </div>
+
+  <footer class="container-fluid text-center">
+    <div class="row">
+    <div class="col-sm-4">
+      <h3> Contact us</h3>
+      <br>
+      <h4>27 Prince George's Park, Block 6, Level 2, 118425</h4>
+    </div>
+    <div class="col-sm-4">
+      <h3> Connect</h3>
+      <a href="#" class="fa fa-facebook"></a>
+      <a href="#" class="fa fa-twitter"></a>
+      <a href="#" class="fa fa-google"></a>
+      <a href="#" class="fa fa-linkedin"></a>
+      <a href="#" class="fa fa-youtube"></a>
+    </div>
+    <div class="col-sm-4">
+      <img src="images/Shareit.jpeg" class="icon" height="200px">
+    </div>
+  </footer>
+{/body}
