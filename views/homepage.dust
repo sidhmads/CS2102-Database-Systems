@@ -7,7 +7,7 @@
 {<body}
 <h2 style="text-align: center">SHAREit</h2>
 
-<form action="/action_page.php">
+<form>
   <div class="imgcontainer">
     <img src="https://z-p3-scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p200x200/27752221_2017379011811690_3319014037987027508_n.png?oh=49011b4fde65099fe40af1095ff3e175&oe=5B47BEA4"
      alt="avatar" class="avatar">
@@ -20,7 +20,7 @@
     <label for="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="psw" required>
 
-    <button type="submit" onclick="goToStartPage()">Login</button>
+    <button class="startPage">Login</button>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
