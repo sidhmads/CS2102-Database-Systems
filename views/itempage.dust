@@ -55,6 +55,37 @@
       </table>
     </div>
   </div>
+  <button type="button" class="btn btn-primary">Edit</button>
+
+<h1><u>Bidding Details </u></h1>
+<h3>time remaining: 35 hrs</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Bidder Name</th>
+      <th scope="col">Price Offered/day</th>
+      <th scope="col">Days requested</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>$5</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>$6</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+
+
 
   <footer class="container-fluid text-center">
     <div class="row">
