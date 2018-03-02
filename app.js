@@ -69,6 +69,15 @@ app.get('/start', (req, res) => {
   res.render('startpage');
 });
 
+app.get('/search', (req, res) => {
+  res.render('searchpage');
+});
+
+app.get('/item', (req, res) => {
+  res.render('itempage');
+});
+
+
 // app.get('/', function(req, res) {
 //   client.query('SELECT * FROM recipes', (err, result) => {
 //     if(err) {

@@ -32,6 +32,13 @@
   		border: 2px solid #FFF;
   	}
 
+    .searchbutton{
+      margin: 0px 30px;
+    }
+
+    .table{
+      margin: 50px 0px;
+    }
   	#icon{
   		max-width: 200px;
   		/*margin: 1% auto;*/
