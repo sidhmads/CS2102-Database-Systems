@@ -17,7 +17,8 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavBar">
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="#">Profile</a></li>
+          <li><a href="/start">Home</a></li>
+          <li><a href="/profile">Profile</a></li>
           <li><a href="#">Settings</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>

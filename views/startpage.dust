@@ -25,7 +25,7 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavBar">
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="#">Profile</a></li>
+          <li class="active"><a href="/profile">Profile</a></li>
           <li><a href="#">Settings</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
@@ -37,24 +37,34 @@
     <h2>Our Categories</h2>
     <div class="row">
       <div class="col-sm-4 categories">
-        <img src="/images/electronics.png" id="icon">
-        <h4>Electronics</h4>
+        <a href="/search/Electronics">
+          <img src="/images/electronics.png" id="icon">
+          <h4>Electronics</h4>
+        </a>
       </div>
       <div class="col-sm-4 categories">
-        <img src="/images/clothing.png" id="icon">
-        <h4>Clothing</h4>
+        <a href="/search/Clothing">
+          <img src="/images/clothing.png" id="icon">
+          <h4>Clothing</h4>
+        </a>
       </div>
       <div class="col-sm-4 categories">
-        <img src="/images/books.png" id="icon">
-        <h4>Books</h4>
+        <a href="/search/Books">
+          <img src="/images/books.png" id="icon">
+          <h4>Books</h4>
+        </a>
       </div>
       <div class="col-sm-4 categories">
-        <img src="/images/toys.png" id="icon">
-        <h4>Toys & Games</h4>
+        <a href="/search/Games">
+          <img src="/images/toys.png" id="icon">
+          <h4>Toys & Games</h4>
+        </a>
       </div>
       <div class="col-sm-4 categories">
-        <img src="/images/others.png" id="icon">
-        <h4>Others</h4>
+        <a href="/search/others">
+          <img src="/images/others.png" id="icon">
+          <h4>Others</h4>
+        </a>
       </div>
     </div>
   </div>

@@ -21,15 +21,7 @@ router.get('/', (req, res) => {
     res.render('homepage');
   }
 });
-router.get('/index', function(req, res) {
-  client.query('SELECT * FROM recipes', (err, result) => {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    res.render('index', {recipes: result.rows});
-    // client.end()
-  });
-});
+
 router.post('/login', function(req, res, next) {
   if (req.isAuthenticated()) {return res.redirect('/start');};
   passport.authenticate('local', function(err, user, info) {
@@ -117,14 +109,22 @@ router.delete('/delete/:id', authenticationAdminMiddleware(), (req,res) => {
 });
 
 router.get('/start', authenticationMiddleware(), (req, res) => {
-  // getting the user_id
-  // client.query('SELECT nickname from recipes as R, public."User" as U where  R.added = U.id ', [req.session.passport.user.user_id], (err, results) => {
-  //   console.log(results);
-  // });
   res.render('startpage');
 });
 
-router.get('/search', authenticationMiddleware(), (req, res) => {
+router.get('/profile', authenticationMiddleware(), (req, res) => {
+  client.query('SELECT * FROM public."User" WHERE id = $1',
+    [req.session.passport.user], (err, result) => {
+      if (err) throw err;
+      if(result.rows.length > 0) {
+        res.render('profilepage', {user: result.rows[0]});
+      } else {
+        res.redirect('/start');
+      }
+    })
+});
+
+router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
   res.render('searchpage');
 });
 
@@ -156,11 +156,6 @@ function authenticationMiddleware () {
 
 function authenticationAdminMiddleware () {
 	return (req, res, next) => {
-    // console.log('start');
-		// console.log(`req.session.passport.user: ${JSON.stringify(req.session.passport)}`);
-    // console.log('req');
-    // console.log(req);
-    // console.log(res);
     if (req.isAuthenticated()) {
       client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user], (err,result) => {
         if (result.rows[0].isadmin  ) return next();
