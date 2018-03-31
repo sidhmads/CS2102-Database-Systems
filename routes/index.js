@@ -117,11 +117,18 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
     [req.session.passport.user], (err, result) => {
       if (err) throw err;
       if(result.rows.length > 0) {
-        res.render('profilepage', {user: result.rows[0]});
+        var user_info = result.rows[0];
+        client.query('SELECT name FROM public."Item" WHERE user_id = $1',
+        [req.session.passport.user], (err, result) => {
+          if (err) throw err;
+          if(result.rows.length > 0) {
+                res.render('profilepage', {user: user_info, items: result.rows});
+          }
+        })
       } else {
         res.redirect('/start');
       }
-    })
+    });
 });
 
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {

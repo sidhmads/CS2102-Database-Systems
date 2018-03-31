@@ -55,21 +55,20 @@
           <tbody>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Item Name</th>
+              <th scope="col">Name</th>
             </tr>
+            {#items}
             <tr>
               <th scope="row">1</th>
-              <td>psp</td>
+              <td>{name}</td>
             </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>shoe</td>
-            </tr>
+            {/items}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
 <!-- bidding items -->
   <div class="container">
     <div class="row">
