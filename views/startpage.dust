@@ -43,9 +43,9 @@
         </a>
       </div>
       <div class="col-sm-4 categories">
-        <a href="/search/Clothing">
+        <a href="/search/Clothes">
           <img src="/images/clothing.png" id="icon">
-          <h4>Clothing</h4>
+          <h4>Clothes</h4>
         </a>
       </div>
       <div class="col-sm-4 categories">
@@ -55,13 +55,13 @@
         </a>
       </div>
       <div class="col-sm-4 categories">
-        <a href="/search/Games">
+        <a href="/search/Toy and Games">
           <img src="/images/toys.png" id="icon">
           <h4>Toys & Games</h4>
         </a>
       </div>
       <div class="col-sm-4 categories">
-        <a href="/search/others">
+        <a href="/search/Others">
           <img src="/images/others.png" id="icon">
           <h4>Others</h4>
         </a>

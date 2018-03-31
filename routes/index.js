@@ -118,17 +118,34 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
       if (err) throw err;
       if(result.rows.length > 0) {
         var user_info = result.rows[0];
-        client.query('SELECT name FROM public."Item" WHERE user_id = $1',
+        client.query('SELECT * FROM public.item WHERE user_id = $1',
         [req.session.passport.user], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
-                res.render('profilepage', {user: user_info, items: result.rows});
+                var items_info = result.rows;
           }
+          res.render('profilepage', {user: user_info, items: items_info});
         })
       } else {
         res.redirect('/start');
       }
     });
+});
+
+router.post('/addItem', authenticationMiddleware(), (req, res) => {
+  if (req.body.min_price === '') {
+    req.body.min_price = 0;
+  }
+  if (req.body.bid_duration == '') {
+    req.body.bid_duration = 3;
+  }
+  if (req.body.lend_duration == '') {
+    req.body.lend_duration = 21;
+  }
+  console.log(req.body);
+  client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id) VALUES($1, $2, $3, $4, $5, $6, $7)',
+    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, req.session.passport.user]);
+    res.redirect('/profile');
 });
 
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
