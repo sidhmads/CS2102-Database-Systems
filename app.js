@@ -3,49 +3,21 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cons = require('consolidate'),
     dust = require('dustjs-helpers'),
-    pg = require('pg'),
-    app = express();
+    app = express(),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    expressValidator = require('express-validator');
 
-// DB Connect String
-const { Pool, Client } = require('pg')
-// const pool = new Pool({
-//   user: 'gjnvmnraolubxm',
-//   host: 'ec2-54-235-64-195.compute-1.amazonaws.com',
-//   database: 'dbj8jp9pamqb64',
-//   password: '84b35575558f2fe073f8ba6cc349a4e1f5295c252f83d4fe7e18a3d33c8ed4f4',
-//   port: 5432,
-//   ssl: 'require'
-// });
-const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
-// const connectionString = 'postgresql://e0015909:group-24@psql1.comp.nus.edu.sg:5432/cs2102';
-// const connectionString = 'postgres://zmoghsxduyicpd:2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f@ec2-174-129-221-240.compute-1.amazonaws.com:5432/dbi701jafqoq2a';
-const pool = new Pool({
-  connectionString: connectionString,
-})
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  pool.end()
-})
 
-// var client = new pg.Client({
-//     user: "zmoghsxduyicpd",
-//     password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
-//     database: "dbi701jafqoq2a",
-//     port: 5432,
-//     host: "ec2-174-129-221-240.compute-1.amazonaws.com",
-//     ssl: 'require'
-// });
+// Authentication
+var session = require('express-session');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
 
-const client = new Client({
-  connectionString: connectionString,
-})
-client.connect((err) => {
-  if (err) {
-    console.error('connection error', err.stack)
-  } else {
-    console.log('connected')
-  }
-});
+var index = require('./routes/index');
+var users = require('./routes/users');
 
 // Assign Dust Engine to .dust files
 app.engine('dust', cons.dust);
@@ -54,31 +26,67 @@ app.engine('dust', cons.dust);
 app.set('view engine', 'dust');
 app.set('views', __dirname + '/views');
 
+app.use(logger('dev'));
+
+app.use(cookieParser());
+
 // Set the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Body Parser Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressValidator());
 
-app.get('/', (req, res) => {
-  res.render('homepage');
-});
+var pg = require('pg')
+  , session = require('express-session')
+  , pgSession = require('connect-pg-simple')(session);
 
-app.get('/start', (req, res) => {
-  res.render('startpage');
-});
+var client = require('./db').client;
 
-app.get('/search', (req, res) => {
-  res.render('searchpage');
-});
+var pgPool = require('./db').pool;
 
-app.get('/item', (req, res) => {
-  res.render('itempage');
-});
+app.use(session({
+  store: new pgSession({
+    pool : pgPool,                // Connection pool
+    tableName : 'session'   // Use another table-name than the default "session" one
+  }),
+  secret: 'gdfhasdfnjklhvf',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+}));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-// app.get('/', function(req, res) {
+app.use('/', index);
+app.use('/users', users);
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+   client.query('SELECT password, id FROM  public."User" WHERE nickname = $1', [username],
+   (err, results, fields) => {
+     if(err) {
+       return done(null,false);
+     };
+     if(results.rows.length === 0) {
+       return done(null,false);
+     } else {
+       const hash = results.rows[0].password;
+       bcrypt.compare(password, hash, (err, response) => {
+         if(response === true) {
+           console.log('authenticated');
+           return done(null, {user_id: results.rows[0].id});
+         } else {
+           return done(null, false);
+         }
+       });
+     }
+   });
+}));
+
+// app.get('/index', function(req, res) {
 //   client.query('SELECT * FROM recipes', (err, result) => {
 //     if(err) {
 //       return console.error('error running query', err);
@@ -87,37 +95,37 @@ app.get('/item', (req, res) => {
 //     // client.end()
 //   });
 // });
-
-app.get('/search/:name', (req,res) => {
-  client.query('SELECT * FROM recipes WHERE name = $1' , [req.params.name], (err, result) => {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    if (result) {
-      res.render('index', {recipes: result.rows});
-    } else {
-      res.redirect('/');
-    }
-  });
-})
-
-app.post('/add', (req,res) => {
-  client.query('INSERT INTO recipes(name, ingredients, directions) VALUES($1, $2, $3)',
-  [req.body.name, req.body.ingredients, req.body.directions]);
-  res.redirect('/');
-});
-
-app.post('/edit', (req,res) => {
-  client.query('UPDATE recipes SET name=$1, ingredients=$2, directions=$3 WHERE id=$4',
-  [req.body.name, req.body.ingredients, req.body.directions, req.body.id]);
-  res.redirect('/');
-});
-
-app.delete('/delete/:id',(req,res) => {
-  client.query('DELETE FROM recipes WHERE id = $1',
-  [req.params.id]);
-  res.sendStatus(200);
-});
+//
+// app.get('/search/:name', (req,res) => {
+//   client.query('SELECT * FROM recipes WHERE name = $1' , [req.params.name], (err, result) => {
+//     if(err) {
+//       return console.error('error running query', err);
+//     }
+//     if (result) {
+//       res.render('index', {recipes: result.rows});
+//     } else {
+//       res.redirect('/');
+//     }
+//   });
+// })
+//
+// app.post('/add', (req,res) => {
+//   client.query('INSERT INTO recipes(name, ingredients, directions, added) VALUES($1, $2, $3, $4)',
+//   [req.body.name, req.body.ingredients, req.body.directions, req.session.passport.user.user_id]);
+//   res.redirect('/');
+// });
+//
+// app.post('/edit', (req,res) => {
+//   client.query('UPDATE recipes SET name=$1, ingredients=$2, directions=$3 WHERE id=$4',
+//   [req.body.name, req.body.ingredients, req.body.directions, req.body.id]);
+//   res.redirect('/');
+// });
+//
+// app.delete('/delete/:id',(req,res) => {
+//   client.query('DELETE FROM recipes WHERE id = $1',
+//   [req.params.id]);
+//   res.sendStatus(200);
+// });
 
 // Server
 

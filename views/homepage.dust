@@ -4,23 +4,31 @@
   <link rel="stylesheet" href="/css/homepage.css" />
 {/style}
 
+
 {<body}
+
 <h2 style="text-align: center">SHAREit</h2>
 
-<form>
+<ul>
+{#errors}
+ <li class="alert alert-danger" role="alert">{msg}</li>{~n}
+{/errors}
+</ul>
+
+<form method="POST" action="/login">
   <div class="imgcontainer">
     <img src="https://z-p3-scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p200x200/27752221_2017379011811690_3319014037987027508_n.png?oh=49011b4fde65099fe40af1095ff3e175&oe=5B47BEA4"
      alt="avatar" class="avatar">
   </div>
 
   <div class="container">
-    <label for="uname"><b>Email</b></label>
-    <input type="text" placeholder="Enter Email" name="uname" required>
+    <label for="username"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" name="username" required>
 
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
+    <label for="password"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="password" required>
 
-    <button class="startPage">Login</button>
+    <button type="submit">Login</button>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
@@ -37,22 +45,35 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Sign Up</h4>
       </div>
+      <ul>
+        <li>Username must be between 4-15 characters long</li>
+        <li>Email address must be between 4-100 characters long</li>
+        <li>Password must be between 8-100 characters long</li>
+        <li>Password must include one lowercase character, one uppercase character, a number, and a special character</li>
+        <li>8 digit phone number</li>
+      </ul>
       <div class="modal-body">
-        <label for="email"><b>Email</b></label>
-        <input type="text" placeholder="Enter Email" name="email" required>
+        <form method="POST" action="/register">
+          <label for="username"><b>Username</b></label>
+          <input type="text" placeholder="Enter Username" name="username" required>
 
-        <label for="psw"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="psw" required>
+          <label for="email"><b>Email</b></label>
+          <input type="text" placeholder="Enter Email" name="email" required>
 
-        <label for="psw-repeat"><b>Repeat Password</b></label>
-        <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+          <label for="psw"><b>Password</b></label>
+          <input type="password" placeholder="Enter Password" name="password" required>
 
-        <label for="phone"><b>PhoneNumber</b></label>
-        <input type="text" placeholder="Phone Number" name="phonenumber" required>
+          <label for="psw_repeat"><b>Repeat Password</b></label>
+          <input type="password" placeholder="Repeat Password" name="passwordMatch" required>
+
+          <label for="phone"><b>PhoneNumber</b></label>
+          <input type="text" placeholder="Phone Number" name="number" required>
+
+          <button type="submit" class="btn btn-primary signup">Submit</button>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </div>

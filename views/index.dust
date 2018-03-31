@@ -50,6 +50,9 @@
         <p>
           <strong> PhoneNumber:</strong> {directions}
         </p>
+        <p>
+          <strong> Added by:</strong> {added}
+        </p>
         <br/>
         <hr />
 

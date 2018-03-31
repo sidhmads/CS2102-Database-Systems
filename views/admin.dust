@@ -1,0 +1,125 @@
+{>"layout" /}
+
+{<body}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">ShareIt</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Admin <span class="sr-only">(current)</span></a></li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control search-result" placeholder="Search">
+        </div>
+        <button  class="btn btn-default search-box">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" data-toggle="modal" data-target="#formModal"><strong>Add User</strong></a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+  {#users}
+    <div class="well">
+      <h4>{nickname}
+       <button class="btn btn-default pull-right"
+       data-toggle="collapse" href="#user_{id}"
+       aria-expanded="false" aria-controls="user_{id}">
+       <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      </button>
+      </h4>
+
+      <div class="collapse" id="user_{id}">
+        <br />
+        <br />
+        <p>
+          <strong> ID:</strong> {id}
+        </p>
+        <p>
+          {#isadmin}
+            <strong> isAdmin:</strong> True
+          {:else}
+            <strong> isAdmin:</strong> False
+          {/isadmin}
+        </p>
+        <p>
+          <strong> Email:</strong> {email}
+        </p>
+        <p>
+          <strong> Phone Number:</strong> {number}
+        </p>
+        <br/>
+        <hr />
+
+        <button class="btn btn-default edit-user"
+         data-toggle="modal"
+         data-target="#editFormModal"
+         data-id="{id}"
+         data-nickname="{nickname}"
+         data-isadmin="{isadmin}"
+         data-email="{email}"
+         data-number="{number}">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+        </button>
+
+        <button class="btn btn-danger delete-user" id="{id}">
+          <span class="glyphicon glyphicon-remove" aria-hidden="true" id="{id}"></span>
+        </button>
+      </div>
+    </div>
+  {/users}
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" action="/edit">
+        <input type='hidden' id="edit-form-id" name="id" />
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Edit User</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>UserName</label>
+            <input type="text" class="form-control" name="nickname" id="edit-form-nickname" />
+          </div>
+          <div class="form-group">
+            <label>isAdmin</label>
+            <br>
+              <input type="checkbox" class="form-control" name="isadmin" value="isadmin" id="edit-form-isadmin">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <textarea type="text" class="form-control" name="email" id="edit-form-email"> </textarea>
+          </div>
+          <div class="form-group">
+            <label>PhoneNumber</label>
+            <textarea type="text" class="form-control" name="number" id="edit-form-number"> </textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Save"/>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{/body}
+
+{<script}
+		<script src="/js/admin.js"></script>
+{/script}
