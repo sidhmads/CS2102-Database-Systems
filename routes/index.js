@@ -113,6 +113,7 @@ router.get('/start', authenticationMiddleware(), (req, res) => {
 });
 
 router.get('/profile', authenticationMiddleware(), (req, res) => {
+  //querry for user details
   client.query('SELECT * FROM public."User" WHERE id = $1',
     [req.session.passport.user], (err, result) => {
       if (err) throw err;
@@ -122,13 +123,42 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
         [req.session.passport.user], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
-                res.render('profilepage', {user: user_info, items: result.rows});
+               var items_info = result.rows;
           }
+           res.render('profilepage', {user: user_info, items: items_info});
         })
       } else {
         res.redirect('/start');
       }
     });
+});
+
+// test
+// router.post('/placebid', (req,res) => {
+//     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+//       client.query('INSERT INTO public."User" (nickname, password, number, email) VALUES($1, $2, $3, $4)',
+//       [req.body.username, hash, req.body.number, req.body.email], (error, results, fields) => {
+//         if(error) throw error;
+
+router.post('/placebid', (req,res) => {
+  req.checkBody('price', 'Price must be greater than 0').matches('^[0-9]*$');
+  req.checkBody('daysreq', 'Days Requested must be greater than 0').matches('^[0-9]*$');
+
+  const errors = req.validationErrors();
+  console.log('here');
+  if (errors) {
+    console.log(`errors: ${JSON.stringify(errors)}`);
+    res.render('itempage', {
+      errors: errors
+    });
+  } else {
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+      client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
+      [4, req.session.passport.user,req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
+        if(error) throw error;
+      });
+    });
+  }
 });
 
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
@@ -165,7 +195,7 @@ function authenticationAdminMiddleware () {
 	return (req, res, next) => {
     if (req.isAuthenticated()) {
       client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user], (err,result) => {
-        if (result.rows[0].isadmin  ) return next();
+        if (result.rows[0].isadmin ) return next();
         else {
           res.redirect('/');
         }
