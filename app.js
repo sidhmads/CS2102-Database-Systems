@@ -77,6 +77,10 @@ app.get('/item', (req, res) => {
   res.render('itempage');
 });
 
+app.get('/profile', (req, res) => {
+  res.render('profilepage');
+});
+
 
 // app.get('/', function(req, res) {
 //   client.query('SELECT * FROM recipes', (err, result) => {
