@@ -27,7 +27,7 @@
 {#user}
 <div class="container">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <h2><u>Profile</u></h2>
         <img src="/images/profilepic.jpg" class="img-rounded" height="200px">
         <table class="table">
@@ -49,45 +49,175 @@
 <!-- selling items -->
   <div class="container">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <h2><u>Items you are selling</u></h2>
-        <table class="table">
+        <table class="table table-hover">
           <tbody>
             <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Min Price</th>
+              <th scope="col">Bid Duration</th>
+              <th scope="col">Maximum Lend Duration</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
             </tr>
             {#items}
             <tr>
-              <th scope="row">1</th>
-              <td>{name}</td>
+              <th scope="row">{$idx}</th>
+              <td>{item_name}</td>
+              <td>{description}</td>
+              <td>{category}</td>
+              <td>{min_price}</td>
+              <td>{bid_duration}</td>
+              <td>{lend_duration}</td>
+              <td><button class="btn btn-warning edit-item"
+                data-toggle="modal"
+                data-target="#editFormModal"
+                data-id="{item_id}"
+                data-name="{item_name}"
+                data-description="{description}"
+                data-category="{category}"
+                data-minprice="{min_price}"
+                data-biddur="{bid_duration}"
+                data-lenddur="{lend_duration}"
+                >Edit</button></td>
+              <td><button class="btn btn-danger">Delete</button></td>
             </tr>
+
             {/items}
           </tbody>
         </table>
+        <button data-toggle="modal" data-target="#formModal" class="btn btn-primary">Add New Items</button>
       </div>
     </div>
   </div>
 
+  <!-- Form Modal -->
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="post" action="/addItem">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add Item</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Name*</label>
+              <input type="text" class="form-control" name="item_name" required/>
+            </div>
+            <div class="form-group" required>
+              <label>Category*</label>
+              <br>
+              <input type="radio" name="category" value="Electronics" required> Electronics<br>
+              <input type="radio" name="category" value="Clothes" required> Clothes<br>
+              <input type="radio" name="category" value="Books" required> Books <br>
+              <input type="radio" name="category" value="Toys and Games" required> Toys & Games <br>
+              <input type="radio" name="category" value="Others" required> Others <br>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" class="form-control" name="description" />
+            </div>
+            <div class="form-group">
+              <label>Min Price</label>
+              <input type="number" class="form-control" name="min_price" />
+            </div>
+            <div class="form-group">
+              <label>Bid Duration</label>
+              <input type="number" class="form-control" name="bid_duration" placeholder="Default 3 days"/>
+            </div>
+            <div class="form-group">
+              <label>Maximum Lend Duration</label>
+              <input type="number" class="form-control" name="lend_duration" placeholder="Default 21 days" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" value="Save"/>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" action="/edit">
+        <input type='hidden' id="edit-form-id" name="id" />
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Item Name</label>
+            <input type="text" class="form-control" name="name" id="edit-form-name" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea type="text" class="form-control" name="description" id="edit-form-description"> </textarea>
+          </div>
+          <div class="form-group" required>
+            <label>Category*</label>
+            <br>
+            <input type="radio" name="category" value="Electronics" id="Electronics" required> Electronics<br>
+            <input type="radio" name="category" value="Clothes"  id="Clothes" required> Clothes<br>
+            <input type="radio" name="category" value="Books"  id="Books" required> Books <br>
+            <input type="radio" name="category" value="Toys and Games"  id="Toys and Games" required> Toys & Games <br>
+            <input type="radio" name="category" value="Others"  id="Others" required> Others <br>
+          </div>
+          <div class="form-group">
+            <label>Min Price</label>
+            <input type="number" class="form-control" name="minPrice" id="edit-form-minPrice" />
+          </div>
+          <div class="form-group">
+            <label>Bid Duration</label>
+            <input type="number" class="form-control" name="bidDura" id="edit-form-bidDur" />
+          </div>
+          <div class="form-group">
+            <label>Maximum Lend Duration</label>
+            <input type="number" class="form-control" name="lendDura" id="edit-form-lendDur" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Save"/>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 <!-- bidding items -->
   <div class="container">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <h2><u>Items you are currently bidding for</u></h2>
-        <table class="table">
+        <table class="table table-hover">
           <tbody>
             <tr>
               <th scope="col">#</th>
               <th scope="col">Item Name</th>
+              <th scope="col">Price Offered</th>
+              <th scope="col">Days Requested</th>
+              <th scope="col">Date of Request</th>
             </tr>
+            {#bidding_items}
             <tr>
-              <th scope="row">1</th>
-              <td>shirt</td>
+              <th scope="row">{$idx}</th>
+              <td>{item_name}</td>
+              <td>{price_offered}</td>
+              <td>{days_requested}</td>
+              <td>{date_of_bid}</td>
             </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>slippers</td>
-            </tr>
+            {/bidding_items}
           </tbody>
         </table>
       </div>
@@ -116,5 +246,5 @@
 {/body}
 
 {<script}
-  <script type="text/javascript" src="/js/startpage.js"></script>
+  <script type="text/javascript" src="/js/profilepage.js"></script>
 {/script}

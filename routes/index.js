@@ -119,33 +119,40 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
       if (err) throw err;
       if(result.rows.length > 0) {
         var user_info = result.rows[0];
-        client.query('SELECT name FROM public."Item" WHERE user_id = $1',
+        var selling_items_info;
+        var bidding_items_info;
+        var updated = false;
+        //get items being sold by user
+        client.query('SELECT * FROM public.item WHERE user_id = $1',
         [req.session.passport.user], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
-               var items_info = result.rows;
+               selling_items_info = result.rows;//list
+               updated = true;
           }
-           res.render('profilepage', {user: user_info, items: items_info});
-        })
+          // get items being bidded by user
+          client.query('SELECT * FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
+          [req.session.passport.user], (err, result) => {
+            if (err) throw err;
+            if(result.rows.length > 0) {
+                 bidding_items_info = result.rows;//list
+            }
+            console.log(selling_items_info);
+            res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info});     
+          });
+        });
       } else {
         res.redirect('/start');
       }
     });
 });
 
-// test
-// router.post('/placebid', (req,res) => {
-//     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-//       client.query('INSERT INTO public."User" (nickname, password, number, email) VALUES($1, $2, $3, $4)',
-//       [req.body.username, hash, req.body.number, req.body.email], (error, results, fields) => {
-//         if(error) throw error;
-
 router.post('/placebid', (req,res) => {
   req.checkBody('price', 'Price must be greater than 0').matches('^[0-9]*$');
   req.checkBody('daysreq', 'Days Requested must be greater than 0').matches('^[0-9]*$');
+  console.log('placing bid');
 
   const errors = req.validationErrors();
-  console.log('here');
   if (errors) {
     console.log(`errors: ${JSON.stringify(errors)}`);
     res.render('itempage', {
@@ -154,11 +161,27 @@ router.post('/placebid', (req,res) => {
   } else {
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
       client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
-      [4, req.session.passport.user,req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
+      [4, req.session.passport.user, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
         if(error) throw error;
       });
     });
   }
+});
+
+router.post('/addItem', authenticationMiddleware(), (req, res) => {
+  if (req.body.min_price === '') {
+    req.body.min_price = 0;
+  }
+  if (req.body.bid_duration == '') {
+    req.body.bid_duration = 3;
+  }
+  if (req.body.lend_duration == '') {
+    req.body.lend_duration = 21;
+  }
+  console.log(req.body);
+  client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id) VALUES($1, $2, $3, $4, $5, $6, $7)',
+    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, req.session.passport.user]);
+    res.redirect('/profile');
 });
 
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {

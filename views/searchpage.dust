@@ -54,7 +54,7 @@
       <a href="#" class="fa fa-youtube"></a>
     </div>
     <div class="col-sm-4">
-      <img src="images/Shareit.jpeg" class="icon" height="200px">
+      <img src="/images/Shareit.jpeg" class="icon" height="200px">
     </div>
   </footer>
 {/body}
