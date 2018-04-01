@@ -131,13 +131,13 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
                updated = true;
           }
           // get items being bidded by user
-          client.query('SELECT * FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
+          client.query('SELECT item_name, price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = I.user_id)FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
           [req.session.passport.user], (err, result) => {
             if (err) throw err;
             if(result.rows.length > 0) {
                  bidding_items_info = result.rows;//list
+                 console.log(bidding_items_info);
             }
-            console.log(selling_items_info);
             res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info});     
           });
         });

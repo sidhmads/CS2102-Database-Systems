@@ -208,6 +208,7 @@
               <th scope="col">Price Offered</th>
               <th scope="col">Days Requested</th>
               <th scope="col">Date of Request</th>
+              <th scope="col">Lender</th>
             </tr>
             {#bidding_items}
             <tr>
@@ -216,6 +217,7 @@
               <td>{price_offered}</td>
               <td>{days_requested}</td>
               <td>{date_of_bid}</td>
+              <td>{nickname}</td>
             </tr>
             {/bidding_items}
           </tbody>
