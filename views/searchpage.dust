@@ -27,14 +27,20 @@
   </nav>
 
   <div class="container text-center">
-    <h2>Search Results</h2>
+    {#category}
+    <h2>Search Results for <span>{category}</span></h2>
+    {/category}
     <div class="row">
+      {#items}
       <div class="col-sm-4 item">
-        <a href="/item">
+        <a href="/item/{item_id}">
           <img src="/images/dummy.png" id="icon">
+          <h4>{item_name}</h4>
         </a>
-        <h4>test image</h4>
+        <p>Description: {description}</p>
+        <h4>Lister name: {nickname}</h4>
       </div>
+      {/items}
     </div>
   </div>
 

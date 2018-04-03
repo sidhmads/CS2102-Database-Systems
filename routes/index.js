@@ -77,6 +77,7 @@ router.post('/register', (req,res) => {
   }
 });
 
+//ADMIN PAGE
 router.get('/admin', authenticationAdminMiddleware(), function(req, res) {
   client.query('SELECT * FROM public."User"', (err, result) => {
     if(err) {
@@ -86,6 +87,7 @@ router.get('/admin', authenticationAdminMiddleware(), function(req, res) {
   });
 });
 
+//ADMIN PAGE
 router.post('/edit', (req,res) => {
   var isAdmin = false;
   if ("isadmin" in req.body) {
@@ -102,16 +104,20 @@ router.post('/edit', (req,res) => {
   res.redirect('/admin');
 });
 
+//ADMIN PAGE
 router.delete('/delete/:id', authenticationAdminMiddleware(), (req,res) => {
   client.query('DELETE FROM public."User" WHERE id = $1',
   [req.params.id]);
   res.sendStatus(200);
 });
 
+//START PAGE
 router.get('/start', authenticationMiddleware(), (req, res) => {
   res.render('startpage');
 });
 
+
+//PROFILE PAGE
 router.get('/profile', authenticationMiddleware(), (req, res) => {
   //querry for user details
   client.query('SELECT * FROM public."User" WHERE id = $1',
@@ -147,27 +153,8 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
     });
 });
 
-router.post('/placebid', (req,res) => {
-  req.checkBody('price', 'Price must be greater than 0').matches('^[0-9]*$');
-  req.checkBody('daysreq', 'Days Requested must be greater than 0').matches('^[0-9]*$');
-  console.log('placing bid');
 
-  const errors = req.validationErrors();
-  if (errors) {
-    console.log(`errors: ${JSON.stringify(errors)}`);
-    res.render('itempage', {
-      errors: errors
-    });
-  } else {
-    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-      client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
-      [4, req.session.passport.user, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
-        if(error) throw error;
-      });
-    });
-  }
-});
-
+//PROFILE PAGE
 router.post('/addItem', authenticationMiddleware(), (req, res) => {
   if (req.body.min_price === '') {
     req.body.min_price = 0;
@@ -184,12 +171,61 @@ router.post('/addItem', authenticationMiddleware(), (req, res) => {
     res.redirect('/profile');
 });
 
-router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
-  res.render('searchpage');
+
+//ITEM PAGE
+router.post('/placebid/:id', (req,res) => {
+  req.checkBody('price', 'Price must be greater than 0').matches('^[0-9]*$');
+  req.checkBody('daysreq', 'Days Requested must be greater than 0').matches('^[0-9]*$');
+  console.log('placing bid for item id: '+ req.params.id);
+
+  const errors = req.validationErrors();
+  if (errors) {
+    console.log(`errors: ${JSON.stringify(errors)}`);
+    res.render('itempage', {
+      errors: errors
+    });
+  } else {
+      client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
+      [req.params.id, req.session.passport.user, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
+        // if (errors) {
+        //   console.log(`errors: ${JSON.stringify(errors)}`);
+        //   res.render('itempage', {
+        //     errors: errors
+        //   });
+        // } else {
+        //   // res.render('itempage/'+req.params.id);
+        // }
+      });
+  }
 });
 
-router.get('/item', authenticationMiddleware(), (req, res) => {
-  res.render('itempage');
+
+
+//SEARCH/RESULTS PAGE
+router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
+  // res.render('searchpage');
+  console.log(req.params.cat);
+  client.query('SELECT item_id, item_name, description, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE category = $1',
+    [req.params.cat], (err, result) => {
+      if (err) throw err;
+      res.render('searchpage', {category:req.params.cat, items: result.rows});
+    });
+});
+
+//ITEM DESCRIPTION PAGE
+router.get('/item/:id', authenticationMiddleware(), (req, res) => {
+  //get item details
+  client.query('SELECT item_id, item_name, description,min_price,bid_duration,lend_duration,category, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE item_id = $1',
+    [req.params.id], (err, result) => {
+      if (err) throw err;
+      var item_details = result.rows[0];
+      //get list of bidder details
+      client.query('SELECT price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = B.borrower_id) FROM public."biddingItem" B WHERE item_id=$1',
+        [req.params.id], (err, result) => {
+            if (err) throw err;
+            res.render('itempage', {item: item_details, borrower: result.rows});
+        });
+    });
 });
 
 passport.serializeUser(function(user, done) {
