@@ -60,7 +60,6 @@
       </table>
     </div>
   </div>
-  {/item}
 
 
 
@@ -90,23 +89,24 @@
   {/borrower}
 </table>
 
+{@eq key=user_id value=current_id}
+{:else}
 <h1><u>Bid for this item now: </u></h1>
 {#item}
 <form class = "biditem" method="POST" action="/placebid/{item_id}">
   <div class="form-group">
-    <label>Price Offered: (> ${min_price})</label>
+    <label>Price Offered: (>= ${min_price})</label>
     <input type="price" class="form-control" id="price" pattern="^[0-9]*$" name="price" required>
   </div>
   <div class="form-group">
-    <label for="days">Days Requested: (< {lend_duration} days)</label>
+    <label for="days">Days Requested: (<= {lend_duration} days)</label>
     <input type="days" class="form-control" id="days" pattern="^[0-9]*$" name="daysreq" required>
   </div>
   {/item}
   <button type="submit" class="btn btn-primary">Submit Bid</button>
 </form>
+{/eq}
 <br><br>
-
-
   <footer class="container-fluid text-center">
     <div class="row">
     <div class="col-sm-4">
@@ -126,6 +126,7 @@
       <img src="images/Shareit.jpeg" class="icon" height="200px">
     </div>
   </footer>
+  {/item}
 {/body}
 
 {<script}
