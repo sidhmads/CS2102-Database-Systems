@@ -1,4 +1,4 @@
-{>"layout" /}
+  {>"layout" /}
 
 {<style}
   <link rel="stylesheet" href="/css/startpage.css" />
@@ -17,8 +17,12 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavBar">
         <ul class="nav navbar-nav navbar-right">
+          {#user}
+            {#isadmin}
+          <li><a href="/admin">Admin</a></li>
+            {/isadmin}
+          {/user}
           <li><a href="/start">Home</a></li>
-          <li><a href="#">Settings</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
       </div>
@@ -50,7 +54,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h2><u>Items you are selling</u></h2>
+        <h2><u>Items you are loaning</u></h2>
         <table class="table table-hover">
           <tbody>
             <tr>
@@ -59,20 +63,26 @@
               <th scope="col">Description</th>
               <th scope="col">Category</th>
               <th scope="col">Min Price</th>
-              <th scope="col">Bid Duration</th>
               <th scope="col">Maximum Lend Duration</th>
+              <th scope="col">Bid Duration</th>
+              <th scope="col">Bidding Expired</th>
+              <th scope="col">Mode of winning bid selection</th>
+              <th scope="col">Date of Creation</th>
               <th scope="col">Edit</th>
               <th scope="col">Delete</th>
             </tr>
             {#items}
             <tr>
-              <th scope="row">{$idx}</th>
+              <th scope="row">{item_id}</th>
               <td>{item_name}</td>
               <td>{description}</td>
               <td>{category}</td>
               <td>{min_price}</td>
-              <td>{bid_duration}</td>
               <td>{lend_duration}</td>
+              <td>{bid_duration}</td>
+              <td>{expired}</td>
+              <td>{self_selection}</td>
+              <td>{date_of_creation}</td>
               <td><button class="btn btn-warning edit-item"
                 data-toggle="modal"
                 data-target="#editFormModal"
@@ -81,12 +91,12 @@
                 data-description="{description}"
                 data-category="{category}"
                 data-minprice="{min_price}"
+                data-selfSelection = "{self_selection}"
                 data-biddur="{bid_duration}"
                 data-lenddur="{lend_duration}"
                 >Edit</button></td>
-              <td><button class="btn btn-danger">Delete</button></td>
+              <td><button class="btn btn-danger delete-item" id="{item_id}">Delete</button></td>
             </tr>
-
             {/items}
           </tbody>
         </table>
@@ -148,7 +158,7 @@
 <div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form method="post" action="/edit">
+      <form method="post" action="/editItem">
         <input type='hidden' id="edit-form-id" name="id" />
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -169,7 +179,7 @@
             <input type="radio" name="category" value="Electronics" id="Electronics" required> Electronics<br>
             <input type="radio" name="category" value="Clothes"  id="Clothes" required> Clothes<br>
             <input type="radio" name="category" value="Books"  id="Books" required> Books <br>
-            <input type="radio" name="category" value="Toys and Games"  id="Toys and Games" required> Toys & Games <br>
+            <input type="radio" name="category" value="Toys and Games"  id="TG" required> Toys & Games <br>
             <input type="radio" name="category" value="Others"  id="Others" required> Others <br>
           </div>
           <div class="form-group">
@@ -177,12 +187,23 @@
             <input type="number" class="form-control" name="minPrice" id="edit-form-minPrice" />
           </div>
           <div class="form-group">
+            <label>Maximum Lend Duration</label>
+            <input type="number" class="form-control" name="lendDura" id="edit-form-lendDur" />
+          </div>
+          <div class="form-group">
             <label>Bid Duration</label>
             <input type="number" class="form-control" name="bidDura" id="edit-form-bidDur" />
           </div>
           <div class="form-group">
-            <label>Maximum Lend Duration</label>
-            <input type="number" class="form-control" name="lendDura" id="edit-form-lendDur" />
+            <label>start bid today?</label>
+            <br>
+              <input type="checkbox" class="form-control" name="bid_start_today" value="" id="edit-form-isadmin">
+          </div>
+          <div class="form-group">
+            <label>Modes of selecting winning bidder</label>
+            <br>
+            <input type="radio" name="bid_winner" value="self"  id="self" required> Self-Select <br>
+            <input type="radio" name="bid_winner" value="auto"  id="auto" required> Auto-Select <br>
           </div>
         </div>
         <div class="modal-footer">
@@ -193,7 +214,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- bidding items -->
   <div class="container">
@@ -209,19 +229,75 @@
               <th scope="col">Days Requested</th>
               <th scope="col">Date of Request</th>
               <th scope="col">Lender</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
             </tr>
-            {#bidding_items}
+  {#bidding_items}
             <tr>
-              <th scope="row">{$idx}</th>
+              <th scope="row">{bid_item_id}</th>
               <td>{item_name}</td>
               <td>{price_offered}</td>
               <td>{days_requested}</td>
               <td>{date_of_bid}</td>
               <td>{nickname}</td>
+              <td><button class="btn btn-warning edit-bid"
+                data-toggle="modal"
+                data-target="#editBidFormModal"
+                data-bid_item_id="{bid_item_id}"
+                data-item_name="{item_name}"
+                data-price_offered="{price_offered}"
+                data-days_requested="{days_requested}"
+                data-date_of_bid="{date_of_bid}"
+                data-nickname="{nickname}"
+                data-minprice ="{min_price}"
+                data-maxduration = "{lend_duration}"
+                >Edit</button></td>
+              <td><button class="btn btn-danger delete-bid" id="{bid_item_id}">Delete</button></td>
             </tr>
-            {/bidding_items}
+              {/bidding_items}
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Bid Modal -->
+  <div class="modal fade" id="editBidFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="post" action="/editBid">
+          <input type='hidden' id="edit-form-bid_item_id" name="bid_item_id" />
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Edit Bid</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Item Name</label>
+              <input type="text" class="form-control" name="item_name" id="edit-form-item_name" readonly="readonly" />
+            </div>
+            <div class="form-group">
+              <label>Price Offered</label>
+              <input type="number" class="form-control" name="price_offered" id="edit-form-price_offered"/>
+            </div>
+            <div class="form-group">
+              <label>Days Requested</label>
+              <input type="number" class="form-control" name="days_requested" id="edit-form-days_requested"/>
+            </div>
+            <div class="form-group">
+              <label>Date of Bid</label>
+              <input type="datetime" class="form-control" name="date_of_bid" id="edit-form-date_of_bid" readonly="readonly" />
+            </div>
+            <div class="form-group">
+              <label>Lender Name</label>
+              <input type="text" class="form-control" name="lender_name" id="edit-form-lender_name" readonly="readonly" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary bid-check" value="Save"/>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -71,3 +71,7 @@
   			font-size: 1.9em;
   		}
   	}
+    .countdown {
+    text-align: center;
+    font-weight: bold;
+    }

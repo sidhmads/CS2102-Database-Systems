@@ -7,8 +7,40 @@ var client = require('.././db').client;
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+var results = {};
+  var x = 0;
+
+setInterval(function () {
+  client.query('WITH ex AS (SELECT A.item_id, (B.price_offered * B.days_requested) AS earnings, B.borrower_id, B.date_of_bid FROM public.item AS A NATURAL JOIN public."biddingItem" AS B WHERE not_expired = FALSE and self_selection = FALSE ORDER BY A.item_id, earnings DESC, date_of_bid ASC)  ,bid AS (SELECT item_id, MAX(earnings) as earnings FROM ex GROUP BY item_id ) ,winning_bid AS (SELECT A.item_id, A.earnings, B.date_of_bid, B.days_requested FROM bid AS A INNER JOIN  public."biddingItem" AS B ON A.item_id = B.item_id AND A.earnings = (B.price_offered * B.days_requested))  , winners AS (SELECT item_id as id, MAX(earnings) AS earnings, MIN(date_of_bid) AS date_of_bid ,MAX(days_requested) AS days_requested FROM winning_bid GROUP BY item_id) select id, earnings, B.days_requested, borrower_id, A.date_of_bid from winners as A INNER JOIN  public."biddingItem" AS B ON A.id = B.item_id AND A.earnings = (B.price_offered * B.days_requested) AND A.date_of_bid = B.date_of_bid')
+  .then(
+  result => {
+    results = result.rows;
+  });
+}, 1000);
+
+setInterval(() => {
+  var ids = [];
+  for (var i of results) {
+    var endDate = new Date()
+    endDate.setDate(endDate.getDate() + parseInt(i.days_requested));
+    var id = i.id;
+    ids.push(id);
+    var borrower_id = i.borrower_id;
+    var earnings = i.earnings;
+    client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
+  }
+  for (var i of ids) {
+    client.query('DELETE FROM public."biddingItem" WHERE item_id = $1',
+    [i]);
+    client.query('UPDATE public.item SET borrowed=TRUE WHERE item_id = $1', [i]);
+  }
+  results = {};
+  ids = [];
+}, 10000);
+
 /* GET home page. */
 var loginFail = false;
+
 router.get('/', (req, res) => {
   if(req.isAuthenticated()) {
     return res.redirect('/start');
@@ -113,7 +145,9 @@ router.delete('/delete/:id', authenticationAdminMiddleware(), (req,res) => {
 
 //START PAGE
 router.get('/start', authenticationMiddleware(), (req, res) => {
-  res.render('startpage');
+  client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, result) => {
+    res.render('startpage', {user: result.rows[0]});
+  });
 });
 
 
@@ -134,15 +168,27 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           if (err) throw err;
           if(result.rows.length > 0) {
                selling_items_info = result.rows;//list
+               for (var i of selling_items_info) {
+                 if(i['not_expired'] === false) {
+                   i['expired'] = true;
+                 } else {
+                   i['expired'] = false;
+                 }
+                 if(i['self_selection'] === false) {
+                   i['self_selection'] = 'auto'
+                 } else {
+                   i['self_selection'] = 'self'
+                 }
+               }
                updated = true;
           }
           // get items being bidded by user
-          client.query('SELECT item_name, price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = I.user_id)FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
+          client.query('SELECT item_name, price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = I.user_id), bid_item_id, min_price, lend_duration FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
           [req.session.passport.user.id], (err, result) => {
             if (err) throw err;
             if(result.rows.length > 0) {
                  bidding_items_info = result.rows;//list
-                 console.log(bidding_items_info);
+                 // console.log(bidding_items_info);
             }
             res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info});
           });
@@ -159,19 +205,78 @@ router.post('/addItem', authenticationMiddleware(), (req, res) => {
   if (req.body.min_price === '') {
     req.body.min_price = 0;
   }
-  if (req.body.bid_duration == '') {
+  if (req.body.bid_duration === '') {
     req.body.bid_duration = 3;
   }
-  if (req.body.lend_duration == '') {
+  if (req.body.lend_duration === '') {
     req.body.lend_duration = 21;
   }
-  console.log(req.body);
-  console.log(req.session.passport.user.id);
-  client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id) VALUES($1, $2, $3, $4, $5, $6, $7)',
-    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, req.session.passport.user.id]);
+  client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id, date_of_creation, bid_start_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $8)',
+    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, req.session.passport.user.id, new Date()]);
     res.redirect('/profile');
 });
 
+//PROFILE PAGE
+router.post('/editItem', authenticationMiddleware(), (req, res) => {
+  console.log(req.body);
+  var bid_start_today;
+  var self_selection;
+  if (req.body.minPrice === '') {
+    req.body.minPrice = 0;
+  }
+  if (req.body.bidDura === '') {
+    req.body.bidDura = 3;
+  }
+  if (req.body.lendDura === '') {
+    req.body.lendDura = 21;
+  }
+  if (req.body.bid_winner === 'self') {
+    self_selection = true;
+  } else {
+    self_selection = false;
+  }
+  console.log(self_selection);
+  if (req.body.bid_start_today === '') {
+    client.query('UPDATE public.item SET item_name=$1, description=$2, min_price=$3, bid_duration=$4, lend_duration=$5, category=$6, self_selection=$7, not_expired = True, bid_start_date = $8 WHERE item_id=$9',
+    [req.body.name, req.body.description, parseInt(req.body.minPrice), parseInt(req.body.bidDura), parseInt(req.body.lendDura), req.body.category, self_selection, new Date(), parseInt(req.body.id)], (err,results) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/profile');
+    });
+  } else {
+    client.query('UPDATE public.item SET item_name=$1, description=$2, min_price=$3, bid_duration=$4, lend_duration=$5, category=$6, self_selection=$7, not_expired = True WHERE item_id=$8',
+    [req.body.name, req.body.description, parseInt(req.body.minPrice), parseInt(req.body.bidDura), parseInt(req.body.lendDura), req.body.category, self_selection, parseInt(req.body.id)], (err,results) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/profile');
+    });
+  }
+});
+
+router.delete('/deleteItem/:id', authenticationMiddleware(), (req,res) => {
+  client.query('DELETE FROM public.item WHERE item_id = $1',
+  [req.params.id]);
+  res.sendStatus(200);
+});
+
+router.post('/editBid', authenticationMiddleware(), (req, res) => {
+  console.log(req.body);
+  client.query('UPDATE public."biddingItem" SET price_offered=$1, days_requested=$2, date_of_bid = $3 WHERE bid_item_id=$4',
+  [parseInt(req.body.price_offered), parseInt(req.body.days_requested), new Date(), parseInt(req.body.bid_item_id)], (err,results) => {
+    if(err) {
+      console.log(err);
+    }
+    res.redirect('/profile');
+  });
+});
+
+router.delete('/deleteBid/:id', authenticationMiddleware(), (req,res) => {
+  client.query('DELETE FROM public."biddingItem" WHERE bid_item_id = $1',
+  [req.params.id]);
+  res.sendStatus(200);
+});
 
 //ITEM PAGE
 router.post('/placebid/:id', (req,res) => {
@@ -188,7 +293,6 @@ router.post('/placebid/:id', (req,res) => {
   } else {
       client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
       [req.params.id, req.session.passport.user.id, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
-        console.log(new Date());
         if (errors) {
           res.render('itempage', {
             errors: errors
@@ -205,30 +309,53 @@ router.post('/placebid/:id', (req,res) => {
 //SEARCH/RESULTS PAGE
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
   // res.render('searchpage');
-  console.log(req.params.cat);
+  // console.log(req.params.cat);
   client.query('SELECT item_id, item_name, description, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE category = $1',
     [req.params.cat], (err, result) => {
       if (err) throw err;
-      res.render('searchpage', {category:req.params.cat, items: result.rows});
+      client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, results) => {
+        res.render('searchpage', {category:req.params.cat, items: result.rows, user: results.rows[0]});
+        });
     });
 });
 
 //ITEM DESCRIPTION PAGE
 router.get('/item/:id', authenticationMiddleware(), (req, res) => {
   //get item details
-  client.query('SELECT item_id, item_name, description,min_price,bid_duration,lend_duration,category, (SELECT nickname FROM public."User" WHERE id = I.user_id), user_id FROM public.item I WHERE item_id = $1',
+  client.query('SELECT item_id, item_name, description,min_price,bid_duration,lend_duration,category, bid_start_date, not_expired, (SELECT nickname FROM public."User" WHERE id = I.user_id), user_id FROM public.item I WHERE item_id = $1',
     [req.params.id], (err, result) => {
       if (err) throw err;
-      var item_details = result.rows[0];
-      item_details['current_id'] = req.session.passport.user.id;
-      console.log(item_details);
-      //get list of bidder details
-      client.query('SELECT price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = B.borrower_id) FROM public."biddingItem" B WHERE item_id=$1',
-        [req.params.id], (err, result) => {
-            if (err) throw err;
-            res.render('itempage', {item: item_details, borrower: result.rows});
-        });
+      if (result.rows.length > 0) {
+        var item_details = result.rows[0];
+        item_details['current_id'] = req.session.passport.user.id;
+        console.log(item_details);
+        //get list of bidder details
+        client.query('SELECT price_offered, bid_item_id, days_requested, date_of_bid,(SELECT nickname FROM public."User" WHERE id = B.borrower_id) FROM public."biddingItem" B WHERE item_id=$1',
+          [req.params.id], (err, result) => {
+              if (err) throw err;
+              client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, results) => {
+                res.render('itempage', {item: item_details, borrower: result.rows, user: results.rows[0]});
+                });
+          });
+      } else {
+        res.redirect('/');
+      }
     });
+});
+
+router.get('/item/expired/:id', authenticationMiddleware(), (req,res) => {
+  client.query('SELECT date_of_creation, bid_duration from public.item WHERE item_id = $1', [req.params.id], (err, result) => {
+    var countDownDate = new Date(result.rows[0].date_of_creation);
+    countDownDate.setDate(countDownDate.getDate() + parseInt(result.rows[0].bid_duration));
+    countDownDate = countDownDate.getTime();
+    if (new Date().getTime() >= countDownDate) {
+      client.query('UPDATE public.item SET not_expired=False WHERE item_id=$1', [req.params.id], (err,result) => {
+        res.redirect('/item/'.concat(req.params.id));
+      })
+    } else {
+      res.redirect('/item/'.concat(req.params.id));
+    }
+  });
 });
 
 passport.serializeUser(function(user, done) {
@@ -241,15 +368,10 @@ passport.deserializeUser(function(user, done) {
 
 function authenticationMiddleware () {
 	return (req, res, next) => {
-    // console.log('start');
-		// console.log(`req.session.passport.user: ${JSON.stringify(req.session.passport)}`);
-    // console.log('req');
-    // console.log(req);
-    // console.log(res);
-	    if (req.isAuthenticated()) return next();
-      else {
-        res.redirect('/');
-      }
+    if (req.isAuthenticated()) return next();
+    else {
+      res.redirect('/');
+    }
 	}
 }
 

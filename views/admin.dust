@@ -1,36 +1,40 @@
 {>"layout" /}
 
-{<body}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">ShareIt</a>
-    </div>
+{<style}
+  <link rel="stylesheet" href="/css/startpage.css" />
+{/style}
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Admin <span class="sr-only">(current)</span></a></li>
-      </ul>
-      <form class="navbar-form navbar-left">
-        <div class="form-group">
-          <input type="text" class="form-control search-result" placeholder="Search">
-        </div>
-        <button  class="btn btn-default search-box">Submit</button>
-      </form>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" data-toggle="modal" data-target="#formModal"><strong>Add User</strong></a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+{<body}
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/start"><img src="/images/Shareit.jpeg" height="50px"></a>
+        <form class="navbar-form col-sm-4" role="search" action="/search/Clothes">
+          <div class="form-group">
+            <input type="text" class="form-control searchview" placeholder="Search">
+            <button type="submit" class="btn btn-default">
+            <span class="glyphicon glyphicon-search"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavBar">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/start">Home</a></li>
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+
   {#users}
     <div class="well">
       <h4>{nickname}
@@ -97,7 +101,7 @@
             <input type="text" class="form-control" name="nickname" id="edit-form-nickname" />
           </div>
           <div class="form-group">
-            <label>isAdmin</label>
+            <label>isAdmin?</label>
             <br>
               <input type="checkbox" class="form-control" name="isadmin" value="isadmin" id="edit-form-isadmin">
           </div>

@@ -1,6 +1,6 @@
 var pg = require('pg');
 const { Pool, Client } = require('pg')
-// 
+
 // const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
 // const client = new Client({
 //   connectionString: connectionString,
@@ -36,7 +36,7 @@ client.connect((err) => {
   }
 });
 
-pool.connect((err) => {
+pool.connect((err, client, release) => {
   if (err) {
     console.error('connection error pool', err.stack);
   } else {
