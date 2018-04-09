@@ -18,6 +18,25 @@ $(document).ready(()=> {
     }
   });
 
+  $('.accept_bidder').click(() => {
+    console.log('accept bidder');
+    var id = this.document.activeElement.id;
+    var url = '/acceptBidder/' + id;
+    if(confirm('Accept Bidder?')) {
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: (result) => {
+          console.log('Accepting Bidder...')
+          window.location.href="/profile";
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
+  });
+
   $('.edit-item').click(() => {
     $('#edit-form-id').val(this.document.activeElement.dataset.id);
     $('#edit-form-name').val(this.document.activeElement.dataset.name);

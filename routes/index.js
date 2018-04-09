@@ -4,39 +4,51 @@ var expressValidator = require('express-validator');
 var passport = require('passport');
 var client = require('.././db').client;
 
+var user_id;
+
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-var results = {};
+var results_added = {};
   var x = 0;
 
 setInterval(function () {
   client.query('WITH ex AS (SELECT A.item_id, (B.price_offered * B.days_requested) AS earnings, B.borrower_id, B.date_of_bid FROM public.item AS A NATURAL JOIN public."biddingItem" AS B WHERE not_expired = FALSE and self_selection = FALSE ORDER BY A.item_id, earnings DESC, date_of_bid ASC)  ,bid AS (SELECT item_id, MAX(earnings) as earnings FROM ex GROUP BY item_id ) ,winning_bid AS (SELECT A.item_id, A.earnings, B.date_of_bid, B.days_requested FROM bid AS A INNER JOIN  public."biddingItem" AS B ON A.item_id = B.item_id AND A.earnings = (B.price_offered * B.days_requested))  , winners AS (SELECT item_id as id, MAX(earnings) AS earnings, MIN(date_of_bid) AS date_of_bid ,MAX(days_requested) AS days_requested FROM winning_bid GROUP BY item_id) select id, earnings, B.days_requested, borrower_id, A.date_of_bid from winners as A INNER JOIN  public."biddingItem" AS B ON A.id = B.item_id AND A.earnings = (B.price_offered * B.days_requested) AND A.date_of_bid = B.date_of_bid')
   .then(
   result => {
-    results = result.rows;
+    results_added = result.rows;
   });
-}, 1000);
+}, 2000);
+
+setInterval(function() {
+  client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
+  .then(
+  result => {
+    results_added = result.rows;
+  });
+}, 100);
 
 setInterval(() => {
-  var ids = [];
-  for (var i of results) {
-    var endDate = new Date()
-    endDate.setDate(endDate.getDate() + parseInt(i.days_requested));
-    var id = i.id;
-    ids.push(id);
-    var borrower_id = i.borrower_id;
-    var earnings = i.earnings;
-    client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
-  }
-  for (var i of ids) {
-    client.query('DELETE FROM public."biddingItem" WHERE item_id = $1',
-    [i]);
-    client.query('UPDATE public.item SET borrowed=TRUE WHERE item_id = $1', [i]);
-  }
-  results = {};
-  ids = [];
-}, 10000);
+  if (results_added.length > 0 ){
+    var ids = [];
+    for (var i of results_added) {
+      var endDate = new Date()
+      endDate.setDate(endDate.getDate() + parseInt(i.days_requested));
+      var id = i.id;
+      ids.push(id);
+      var borrower_id = i.borrower_id;
+      var earnings = i.earnings;
+      client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
+    }
+    for (var i of ids) {
+      client.query('DELETE FROM public."biddingItem" WHERE item_id = $1',
+      [i]);
+      client.query('UPDATE public.item SET not_expired = FALSE, borrowed=TRUE WHERE item_id = $1', [i]);
+    }
+    results_added = {};
+    ids = [];
+}
+}, 100);
 
 /* GET home page. */
 var loginFail = false;
@@ -145,7 +157,9 @@ router.delete('/delete/:id', authenticationAdminMiddleware(), (req,res) => {
 
 //START PAGE
 router.get('/start', authenticationMiddleware(), (req, res) => {
-  client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, result) => {
+  user_id = req.session.passport.user.id | req.session.passport.user
+  console.log(user_id);
+  client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err, result) => {
     res.render('startpage', {user: result.rows[0]});
   });
 });
@@ -155,16 +169,17 @@ router.get('/start', authenticationMiddleware(), (req, res) => {
 router.get('/profile', authenticationMiddleware(), (req, res) => {
   //querry for user details
   client.query('SELECT * FROM public."User" WHERE id = $1',
-    [req.session.passport.user.id], (err, result) => {
+    [user_id], (err, result) => {
       if (err) throw err;
       if(result.rows.length > 0) {
         var user_info = result.rows[0];
         var selling_items_info;
         var bidding_items_info;
+        var self_selected_items_info;
         var updated = false;
         //get items being sold by user
         client.query('SELECT * FROM public.item WHERE user_id = $1',
-        [req.session.passport.user.id], (err, result) => {
+        [user_id], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
                selling_items_info = result.rows;//list
@@ -184,14 +199,21 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           }
           // get items being bidded by user
           client.query('SELECT item_name, price_offered, days_requested, date_of_bid, (SELECT nickname FROM public."User" WHERE id = I.user_id), bid_item_id, min_price, lend_duration FROM public."biddingItem" B INNER JOIN public.item I on (B.item_id =I.item_id) WHERE borrower_id = $1',
-          [req.session.passport.user.id], (err, result) => {
+          [user_id], (err, result) => {
             if (err) throw err;
             if(result.rows.length > 0) {
                  bidding_items_info = result.rows;//list
                  // console.log(bidding_items_info);
             }
-            res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info});
+
           });
+          client.query('SELECT A.bid_item_id, C.item_id, C.item_name, B.nickname, A.price_offered, A.days_requested, (A.price_offered * A.days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public."User" AS B ON A.borrower_id = B.id INNER JOIN public.item AS C ON A.item_id = C.item_id WHERE C.self_selection = TRUE AND C.user_id = $1 ORDER BY C.item_name DESC, earnings DESC'
+        ,[user_id] , (err, result) => {
+          self_selected_items_info = result.rows;
+          console.log(self_selected_items_info);
+         res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: result.rows});
+        });
+
         });
       } else {
         res.redirect('/start');
@@ -212,7 +234,7 @@ router.post('/addItem', authenticationMiddleware(), (req, res) => {
     req.body.lend_duration = 21;
   }
   client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id, date_of_creation, bid_start_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $8)',
-    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, req.session.passport.user.id, new Date()]);
+    [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, user_id, new Date()]);
     res.redirect('/profile');
 });
 
@@ -261,6 +283,14 @@ router.delete('/deleteItem/:id', authenticationMiddleware(), (req,res) => {
   res.sendStatus(200);
 });
 
+router.get('/acceptBidder/:id', authenticationMiddleware(), (req,res) => {
+  client.query('UPDATE public."biddingItem" SET selected = TRUE WHERE bid_item_id=$1',
+  [req.params.id], (err, result) => {
+    console.log(req.params.id);
+  });
+  res.redirect('/profile');
+});
+
 router.post('/editBid', authenticationMiddleware(), (req, res) => {
   console.log(req.body);
   client.query('UPDATE public."biddingItem" SET price_offered=$1, days_requested=$2, date_of_bid = $3 WHERE bid_item_id=$4',
@@ -292,7 +322,7 @@ router.post('/placebid/:id', (req,res) => {
     });
   } else {
       client.query('INSERT INTO public."biddingItem" (item_id, borrower_id, price_offered, days_requested, date_of_bid) VALUES($1, $2, $3, $4, $5)',
-      [req.params.id, req.session.passport.user.id, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
+      [req.params.id, user_id, req.body.price, req.body.daysreq, new Date()], (error, results, fields) => {
         if (errors) {
           res.render('itempage', {
             errors: errors
@@ -313,7 +343,7 @@ router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
   client.query('SELECT item_id, item_name, description, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE category = $1',
     [req.params.cat], (err, result) => {
       if (err) throw err;
-      client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, results) => {
+      client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err, results) => {
         res.render('searchpage', {category:req.params.cat, items: result.rows, user: results.rows[0]});
         });
     });
@@ -327,13 +357,13 @@ router.get('/item/:id', authenticationMiddleware(), (req, res) => {
       if (err) throw err;
       if (result.rows.length > 0) {
         var item_details = result.rows[0];
-        item_details['current_id'] = req.session.passport.user.id;
+        item_details['current_id'] = user_id;
         console.log(item_details);
         //get list of bidder details
         client.query('SELECT price_offered, bid_item_id, days_requested, date_of_bid,(SELECT nickname FROM public."User" WHERE id = B.borrower_id) FROM public."biddingItem" B WHERE item_id=$1',
           [req.params.id], (err, result) => {
               if (err) throw err;
-              client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err, results) => {
+              client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err, results) => {
                 res.render('itempage', {item: item_details, borrower: result.rows, user: results.rows[0]});
                 });
           });
@@ -378,7 +408,7 @@ function authenticationMiddleware () {
 function authenticationAdminMiddleware () {
 	return (req, res, next) => {
     if (req.isAuthenticated()) {
-      client.query('SELECT isadmin FROM public."User" WHERE id = $1', [req.session.passport.user.id], (err,result) => {
+      client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err,result) => {
         if (result.rows[0].isadmin ) return next();
         else {
           res.redirect('/');
