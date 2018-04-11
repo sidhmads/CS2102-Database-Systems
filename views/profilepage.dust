@@ -415,6 +415,67 @@
     </div>
   </div>
 
+<!-- selecting bidders -->
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2><u>Transaction History</u></h2>
+      <br>
+      <h3>Lent</h3>
+      <table class="table table-hover">
+        <tbody>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Item Name</th>
+            <th scope="col">Borrower Name</th>
+            <th scope="col">Borrower Number</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Earnings</th>
+          </tr>
+          {#transaction_lend}
+          <tr>
+            <th scope="row">#</th>
+            <td>{item_name}</td>
+            <td>{nickname}</td>
+            <td>{number}</td>
+            <td>{start_date}</td>
+            <td>{end_date}</td>
+            <td>{earnings}</td>
+          </tr>
+          {/transaction_lend}
+        </tbody>
+      </table>
+      <h3>Borrowed</h3>
+      <table class="table table-hover">
+        <tbody>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Item Name</th>
+            <th scope="col">Lender Name</th>
+            <th scope="col">Lender Number</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Earnings</th>
+          </tr>
+          {#transaction_borrow}
+          <tr>
+            <th scope="row">#</th>
+            <td>{item_name}</td>
+            <td>{nickname}</td>
+            <td>{number}</td>
+            <td>{start_date}</td>
+            <td>{end_date}</td>
+            <td>{earnings}</td>
+          </tr>
+          {/transaction_borrow}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
 <footer class="container-fluid text-center">
 <div class="row">
 <div class="col-sm-4">

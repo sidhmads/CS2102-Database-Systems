@@ -179,9 +179,7 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
       if (err) throw err;
       if(result.rows.length > 0) {
         var user_info = result.rows[0];
-        var selling_items_info;
-        var bidding_items_info;
-        var self_selected_items_info;
+        var selling_items_info, bidding_items_info, self_selected_items_info, borrowed, lent;
         var updated = false;
         //get items being sold by user
         client.query('SELECT * FROM public.item WHERE user_id = $1',
@@ -216,10 +214,19 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           client.query('SELECT A.bid_item_id, C.item_id, C.item_name, B.nickname, A.price_offered, A.days_requested, (A.price_offered * A.days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public."User" AS B ON A.borrower_id = B.id INNER JOIN public.item AS C ON A.item_id = C.item_id WHERE C.self_selection = TRUE AND C.user_id = $1 ORDER BY C.item_name DESC, earnings DESC'
         ,[user_id] , (err, result) => {
           self_selected_items_info = result.rows;
-          console.log(self_selected_items_info);
-         res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: result.rows});
         });
 
+        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE A.borrower_id = $1', [user_id], (err, result) => {
+          if(result.rows.length > 0) {
+            borrowed = result.rows;
+          }
+        });
+        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE (SELECT user_id from public.item WHERE item_id = A.item_id) = $1', [user_id], (err, result) => {
+          if(result.rows.length > 0) {
+            lent = result.rows;
+          }
+          res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed});
+          });
         });
       } else {
         res.redirect('/start');
