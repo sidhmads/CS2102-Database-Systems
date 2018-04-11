@@ -37,6 +37,12 @@ $(document).ready(()=> {
     }
   });
 
+  $('.edit-profile').click(() => {
+    $('#edit-form-name').val(this.document.activeElement.dataset.name);
+    $('#edit-form-email').val(this.document.activeElement.dataset.email);
+    $('#edit-form-phone').val(this.document.activeElement.dataset.phone);
+  });
+
   $('.edit-item').click(() => {
     $('#edit-form-id').val(this.document.activeElement.dataset.id);
     $('#edit-form-name').val(this.document.activeElement.dataset.name);

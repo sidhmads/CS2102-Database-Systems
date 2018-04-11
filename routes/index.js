@@ -22,13 +22,13 @@ setInterval(function () {
   });
 }, 2000);
 
-setInterval(function() {
-  client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
-  .then(
-  result => {
-    results_added = result.rows;
-  });
-}, 200);
+// setInterval(function() {
+//   client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
+//   .then(
+//   result => {
+//     results_added = result.rows;
+//   });
+// }, 200);
 
 setInterval(() => {
   if (results_added.length > 0 ){
@@ -302,6 +302,30 @@ router.get('/acceptBidder/:id', authenticationMiddleware(), (req,res) => {
     console.log(req.params.id);
   });
   res.redirect('/profile');
+});
+
+router.post('/editProfile', authenticationMiddleware(), (req, res) => {
+  console.log(req.body);
+  bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+    client.query('UPDATE public."User" SET nickname=$1, email=$2, number = $3, password = $4 WHERE id=$5',
+    [req.body.name, req.body.email, req.body.phoneno, hash, user_id], (err,results) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/profile');
+    });
+  });
+});
+
+router.post('/editImage', authenticationMiddleware(), (req, res) => {
+  console.log(req.body);
+    client.query('UPDATE public."User" SET picture=$1 WHERE id=$2',
+    [(req.body.fileToUpload), user_id], (err,results) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/profile');
+    });
 });
 
 router.post('/editBid', authenticationMiddleware(), (req, res) => {

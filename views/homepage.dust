@@ -2,12 +2,27 @@
 
 {<style}
   <link rel="stylesheet" href="/css/homepage.css" />
+  <link rel="stylesheet" href="/css/startpage.css" />
 {/style}
 
 
 {<body}
 
-<h2 style="text-align: center">SHAREit</h2>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/start"><img src="/images/Shareit.jpeg" height="50px"></a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavBar">
+        <h2 style="text-align: center; font-family:cursive">SHAREit</h2>
+      </div>
+    </div>
+  </nav>
 
 <ul>
 {#errors}
@@ -28,14 +43,34 @@
     <label for="password"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="password" required>
 
-    <button type="submit">Login</button>
+    <button type="submit" class="btn btn-success">Login</button>
   </div>
 
-  <div class="container" style="background-color:#f1f1f1">
+  <div class="container" style="background-color:#ADD8E6">
     <button type="button" class="sgninbtn btn btn-primary" data-toggle="modal" data-target="#myModal">Sign Up</button>
     <span class="psw">Forgot <a href="#">password?</a></span>
   </div>
 </form>
+
+<footer class="container-fluid text-center">
+    <div class="row">
+    <div class="col-sm-4">
+      <h3> Contact us</h3>
+      <br>
+      <h4>27 Prince George's Park, Block 6, Level 2, 118425</h4>
+    </div>
+    <div class="col-sm-4">
+      <h3> Connect</h3>
+      <a href="#" class="fa fa-facebook"></a>
+      <a href="#" class="fa fa-twitter"></a>
+      <a href="#" class="fa fa-google"></a>
+      <a href="#" class="fa fa-linkedin"></a>
+      <a href="#" class="fa fa-youtube"></a>
+    </div>
+    <div class="col-sm-4">
+      <img src="images/Shareit.jpeg" class="icon" height="200px">
+    </div>
+  </footer>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
