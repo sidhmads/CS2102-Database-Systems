@@ -10,7 +10,9 @@ var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 var results_added = {};
-  var x = 0;
+var x = 0;
+
+var transacted = [];
 
 setInterval(function () {
   client.query('WITH ex AS (SELECT A.item_id, (B.price_offered * B.days_requested) AS earnings, B.borrower_id, B.date_of_bid FROM public.item AS A NATURAL JOIN public."biddingItem" AS B WHERE not_expired = FALSE and self_selection = FALSE ORDER BY A.item_id, earnings DESC, date_of_bid ASC)  ,bid AS (SELECT item_id, MAX(earnings) as earnings FROM ex GROUP BY item_id ) ,winning_bid AS (SELECT A.item_id, A.earnings, B.date_of_bid, B.days_requested FROM bid AS A INNER JOIN  public."biddingItem" AS B ON A.item_id = B.item_id AND A.earnings = (B.price_offered * B.days_requested))  , winners AS (SELECT item_id as id, MAX(earnings) AS earnings, MIN(date_of_bid) AS date_of_bid ,MAX(days_requested) AS days_requested FROM winning_bid GROUP BY item_id) select id, earnings, B.days_requested, borrower_id, A.date_of_bid from winners as A INNER JOIN  public."biddingItem" AS B ON A.id = B.item_id AND A.earnings = (B.price_offered * B.days_requested) AND A.date_of_bid = B.date_of_bid')
@@ -26,7 +28,7 @@ setInterval(function() {
   result => {
     results_added = result.rows;
   });
-}, 100);
+}, 200);
 
 setInterval(() => {
   if (results_added.length > 0 ){
@@ -38,7 +40,11 @@ setInterval(() => {
       ids.push(id);
       var borrower_id = i.borrower_id;
       var earnings = i.earnings;
-      client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
+      if (!(i in transacted)) {
+        client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
+        transacted.push(i);
+        console.log(i);
+      }
     }
     for (var i of ids) {
       client.query('DELETE FROM public."biddingItem" WHERE item_id = $1',
