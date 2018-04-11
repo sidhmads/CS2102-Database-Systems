@@ -14,12 +14,17 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="/start"><img src="/images/Shareit.jpeg" height="50px"></a>
+        <form class="navbar-form col-sm-4">
+          <div class="form-group">
+            <input type="text" class="form-control searchview" placeholder="Search" id="myInput">
+          </div>
+        </form>
       </div>
       <div class="collapse navbar-collapse" id="myNavBar">
         <ul class="nav navbar-nav navbar-right">
           {#user}
             {#isadmin}
-          <li><a href="/admin">Admin</a></li>
+            <li><a href="/admin">Admin</a></li>
             {/isadmin}
           {/user}
           <li><a href="/start">Home</a></li>
@@ -34,7 +39,7 @@
     {#category}
     <h2>Search Results for <span>{category}</span></h2>
     {/category}
-    <div class="row">
+    <div class="row" id="items">
       {#items}
       <div class="col-sm-4 item">
         <a href="/item/{item_id}">
@@ -70,5 +75,5 @@
 {/body}
 
 {<script}
-  <script type="text/javascript" src="js/searchpage.js"></script>
+		<script src="/js/searchpage.js"></script>
 {/script}

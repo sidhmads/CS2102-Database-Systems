@@ -131,9 +131,9 @@ passport.use(new LocalStrategy(
 // Server
 
 // heroku
-// app.listen(process.env.PORT);
+app.listen(process.env.PORT);
 
 // localhost
-app.listen(3000, function() {
-  console.log('Server Started on Port 3000');
-});
+// app.listen(3000, function() {
+//   console.log('Server Started on Port 3000');
+// });

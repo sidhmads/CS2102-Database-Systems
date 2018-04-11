@@ -30,16 +30,21 @@ $(document).ready(()=> {
     }
   });
 
-  $('.search-box  ').click(() => {
-    var searchName = $('.search-result').val();
-    var url = '/search/' + searchName;
-    $.ajax({
-      url: url,
-      type: 'GET',
-      success: (result) => {
-        console.log('fetcthing ' + searchName );
-        console.log(result);
-      }
-    })
+$('#myInput').on("change keyup paste", () => {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+      ul = document.getElementById("users");
+    li = ul.getElementsByClassName("well");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("h4")[0];
+        if (a.innerText.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+
+        }
+    }
   });
+
 });
