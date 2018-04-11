@@ -14,6 +14,8 @@ var x = 0;
 
 var transacted = [];
 
+var profile_err;
+
 setInterval(function () {
   client.query('WITH ex AS (SELECT A.item_id, (B.price_offered * B.days_requested) AS earnings, B.borrower_id, B.date_of_bid FROM public.item AS A NATURAL JOIN public."biddingItem" AS B WHERE not_expired = FALSE and self_selection = FALSE ORDER BY A.item_id, earnings DESC, date_of_bid ASC)  ,bid AS (SELECT item_id, MAX(earnings) as earnings FROM ex GROUP BY item_id ) ,winning_bid AS (SELECT A.item_id, A.earnings, B.date_of_bid, B.days_requested FROM bid AS A INNER JOIN  public."biddingItem" AS B ON A.item_id = B.item_id AND A.earnings = (B.price_offered * B.days_requested))  , winners AS (SELECT item_id as id, MAX(earnings) AS earnings, MIN(date_of_bid) AS date_of_bid ,MAX(days_requested) AS days_requested FROM winning_bid GROUP BY item_id) select id, earnings, B.days_requested, borrower_id, A.date_of_bid from winners as A INNER JOIN  public."biddingItem" AS B ON A.id = B.item_id AND A.earnings = (B.price_offered * B.days_requested) AND A.date_of_bid = B.date_of_bid')
   .then(
@@ -225,7 +227,9 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           if(result.rows.length > 0) {
             lent = result.rows;
           }
-          res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed});
+          console.log(profile_err);
+          res.render('profilepage', {errors: profile_err, user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed});
+          profile_err = undefined;
         });
              });
       } else {
@@ -305,7 +309,21 @@ router.get('/acceptBidder/:id', authenticationMiddleware(), (req,res) => {
 });
 
 router.post('/editProfile', authenticationMiddleware(), (req, res) => {
-  console.log(req.body);
+  req.checkBody('username', 'Username must be between 4-15 characters long.').len(4, 15);
+  req.checkBody('email', 'The email you entered is invalid, please try again.').isEmail();
+  req.checkBody('email', 'Email address must be between 4-100 characters long, please try again.').len(4, 100);
+  req.checkBody('password', 'Password must be between 8-100 characters long.').len(8, 100);
+  req.checkBody("password", "Password must include one lowercase character, one uppercase character, a number, and a special character.").matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*[^a-zA-Z0-9]).{8,}$/, "i");
+  req.checkBody('passwordMatch', 'Password must be between 8-100 characters long.').len(8, 100);
+  req.checkBody('passwordMatch', 'Passwords do not match, please try again.').equals(req.body.password);
+  req.checkBody("phoneno", "Invalid phone number.").matches('^[0-9]{8}$');
+  const errors = req.validationErrors();
+
+  if (errors) {
+    console.log(`errors: ${JSON.stringify(errors)}`);
+    profile_err = errors;
+    res.redirect('/profile');
+  } else {
   bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
     client.query('UPDATE public."User" SET nickname=$1, email=$2, number = $3, password = $4 WHERE id=$5',
     [req.body.name, req.body.email, req.body.phoneno, hash, user_id], (err,results) => {
@@ -315,6 +333,7 @@ router.post('/editProfile', authenticationMiddleware(), (req, res) => {
       res.redirect('/profile');
     });
   });
+}
 });
 
 router.post('/editImage', authenticationMiddleware(), (req, res) => {
