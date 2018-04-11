@@ -216,18 +216,18 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           self_selected_items_info = result.rows;
         });
 
-        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE A.borrower_id = $1', [user_id], (err, result) => {
+        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE A.borrower_id = $1', [user_id], (err, result) => {
           if(result.rows.length > 0) {
             borrowed = result.rows;
           }
         });
-        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE (SELECT user_id from public.item WHERE item_id = A.item_id) = $1', [user_id], (err, result) => {
+        client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE B.user_id = $1', [user_id], (err, result) => {
           if(result.rows.length > 0) {
             lent = result.rows;
           }
           res.render('profilepage', {user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed});
-          });
         });
+             });
       } else {
         res.redirect('/start');
       }
