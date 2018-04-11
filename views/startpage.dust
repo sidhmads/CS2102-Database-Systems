@@ -37,8 +37,47 @@
     </div>
   </nav>
 
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+      <li data-target="#myCarousel" data-slide-to="1"></li>
+      <li data-target="#myCarousel" data-slide-to="2"></li>
+    </ol>
+
+    <div class="carousel-inner" role="listbox">
+      <div class="item active">
+        <img class="myimages" src="images/sharing.jpg" height="400">
+        <div class="carousel-caption">
+          <h1>Sharing is caring! <3</h1>
+        </div>
+      </div> <!-- End Active -->
+      <div class="item">
+        <img class="myimages" src = "images/bookshelve.jpg">
+        <div class="carousel-caption">
+          <h1>Borrow the latest books!</h1>
+        </div>
+      </div> 
+      <div class="item">
+        <img class="myimages" src = "images/psp.jpg">
+        <div class="carousel-caption">
+          <h1>Enjoy the latest gadgets!</h1>
+        </div>
+      </div>
+    </div> 
+    <!-- Start Slider Controls -->
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+  </div> <!-- End Slider -->
+  <br>
   <div class="container text-center">
-    <h2>Our Categories</h2>
+    <h1>CATEGORIES</h1>
+    <br>
     <div class="row">
       <div class="col-sm-4 categories">
         <a href="/search/Electronics">
@@ -89,7 +128,7 @@
       <a href="#" class="fa fa-youtube"></a>
     </div>
     <div class="col-sm-4">
-      <img src="images/Shareit.jpeg" class="icon" height="200px">
+      <img src="/images/Shareit.jpeg" class="icon" height="200px">
     </div>
   </footer>
 {/body}
