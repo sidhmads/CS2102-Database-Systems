@@ -14,10 +14,10 @@
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	  <style>
 	  body{
-	  	background-image:url('/images/bg3.jpg');
+	  	background-image:url('/images/bg7.jpg');
 	  	background-repeat: no-repeat;
   	 	background-size: cover;
-  	 	background-color: rgba(255,255,255,0.2);
+  	 	background-color: rgba(255,255,255,0.4);
     	background-blend-mode: lighten;
 	  }
 	  </style>

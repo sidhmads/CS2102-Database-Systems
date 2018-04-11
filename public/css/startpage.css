@@ -1,7 +1,7 @@
 .navbar{
   		margin-bottom: 0;
   		border-radius: 0;
-  		background-color: #5E4485;
+  		background-color: #000;
   		color: #FFF;
   		padding: 1% 0;
   		font-size: 1.2em;
@@ -14,7 +14,7 @@
   	}
   	.navbar-inverse .navbar-nav .active a, .navbar-inverse .navbar-nav .active a:focus, .navbar-inverse .navbar-nav .active a:hover{
   		color: #FFF;
-  		background-color: #5E4485;
+  		background-color: #000;
   	}
   	.navbar-inverse .navbar-nav li a{
   		color:#D5D5D5;
@@ -44,7 +44,7 @@
 
   	footer{
   		width:100%;
-  		background-color: #5E4485;
+  		background-color: #000;
   		padding: 5%;
   		color:#FFF;
   	}
