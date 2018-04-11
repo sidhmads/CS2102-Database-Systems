@@ -22,13 +22,13 @@ setInterval(function () {
   });
 }, 2000);
 
-// setInterval(function() {
-//   client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
-//   .then(
-//   result => {
-//     results_added = result.rows;
-//   });
-// }, 200);
+setInterval(function() {
+  client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
+  .then(
+  result => {
+    results_added = result.rows;
+  });
+}, 200);
 
 setInterval(() => {
   if (results_added.length > 0 ){
