@@ -17,7 +17,6 @@ var client = new pg.Client({
     host: "ec2-174-129-221-240.compute-1.amazonaws.com",
     ssl: 'require'
 });
-//
 var pool = new pg.Pool({
     user: "zmoghsxduyicpd",
     password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
