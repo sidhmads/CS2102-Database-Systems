@@ -408,7 +408,7 @@
                 data-toggle="modal"
                 data-target="#editBidFormModal"
                 data-bid_item_id="{bid_item_id}"
-                data-item_name="{item_name}"
+                data-bid_item_name="{item_name}"
                 data-price_offered="{price_offered}"
                 data-days_requested="{days_requested}"
                 data-date_of_bid="{date_of_bid}"
@@ -438,7 +438,7 @@
           <div class="modal-body">
             <div class="form-group">
               <label>Item Name</label>
-              <input type="text" class="form-control" name="item_name" id="edit-form-item_name" readonly="readonly" />
+              <input type="text" class="form-control" name="item_name" id="edit-form-bid_item_name" readonly="readonly" />
             </div>
             <div class="form-group">
               <label>Price Offered</label>

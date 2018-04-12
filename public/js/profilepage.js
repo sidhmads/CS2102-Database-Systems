@@ -95,7 +95,7 @@ $(document).ready(()=> {
   $('.edit-bid').click(() => {
     if(confirm('Editing will change the bid time')) {
       $('#edit-form-bid_item_id').val(this.document.activeElement.dataset.bid_item_id);
-      $('#edit-form-item_name').val(this.document.activeElement.dataset.item_name);
+      $('#edit-form-bid_item_name').val(this.document.activeElement.dataset.bid_item_name);
       $('#edit-form-price_offered').val(this.document.activeElement.dataset.price_offered);
       $('#edit-form-price_offered').attr({
         "min": this.document.activeElement.dataset.minprice

@@ -3,6 +3,17 @@ var router = express.Router();
 var expressValidator = require('express-validator');
 var passport = require('passport');
 var client = require('.././db').client;
+var multer = require('multer');
+var client = require('.././db').client;
+var storage = multer.diskStorage({
+  destination: (req,file,cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req,file,cb) => {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+var upload = multer({storage:storage}).single('image')
 
 var user_id;
 
@@ -216,9 +227,13 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
             }
 
           });
-          client.query('SELECT A.bid_item_id, C.item_id, C.item_name, B.nickname, A.price_offered, A.days_requested, (A.price_offered * A.days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public."User" AS B ON A.borrower_id = B.id INNER JOIN public.item AS C ON A.item_id = C.item_id WHERE C.self_selection = TRUE AND C.user_id = $1 ORDER BY C.item_name DESC, earnings DESC'
-        ,[user_id] , (err, result) => {
-          self_selected_items_info = result.rows;
+
+        client.query('SELECT bid_item_id, item_name, nickname, price_offered, days_requested,(price_offered * days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE B.self_selection = TRUE and B.user_id = $1',
+        [user_id], (err, result) => {
+          if (err) throw err;
+          if(result.rows.length > 0) {
+            self_selected_items_info = result.rows;//list
+          }
         });
 
         client.query('SELECT B.item_name, C.nickname, C.number, A.start_date, A.end_date, A.earnings FROM public.transaction AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE A.borrower_id = $1', [user_id], (err, result) => {
@@ -312,6 +327,7 @@ router.delete('/deleteItem/:id', authenticationMiddleware(), (req,res) => {
 });
 
 router.get('/acceptBidder/:id', authenticationMiddleware(), (req,res) => {
+  console.log('req.params.id');
   client.query('UPDATE public."biddingItem" SET selected = TRUE WHERE bid_item_id=$1',
   [req.params.id], (err, result) => {
     console.log(req.params.id);
