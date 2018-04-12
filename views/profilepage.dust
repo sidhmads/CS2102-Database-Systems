@@ -217,14 +217,14 @@
               <td><button class="btn btn-warning edit-item"
                 data-toggle="modal"
                 data-target="#editFormModal"
-                data-id="{item_id}"
-                data-name="{item_name}"
                 data-description="{description}"
                 data-category="{category}"
                 data-minprice="{min_price}"
                 data-selfSelection = "{self_selection}"
                 data-biddur="{bid_duration}"
                 data-lenddur="{lend_duration}"
+                data-name="{item_name}"
+                data-id="{item_id}"
                 >Edit</button></td>
               <td><button class="btn btn-danger delete-item" id="{item_id}">Delete</button></td>
             </tr>
@@ -290,7 +290,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="post" action="/editItem">
-        <input type='hidden' id="edit-form-id" name="id" />
+        <input type='hidden' class="form-control" name="id" id="edit-form-item_id" />
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
@@ -298,7 +298,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label>Item Name</label>
-            <input type="text" class="form-control" name="name" id="edit-form-name" />
+            <input type="text" class="form-control" name="name" id="edit-form-item_name" />
           </div>
           <div class="form-group">
             <label>Description</label>

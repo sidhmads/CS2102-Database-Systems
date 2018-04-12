@@ -24,13 +24,13 @@ setInterval(function () {
   });
 }, 2000);
 
-// setInterval(function() {
-//   client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
-//   .then(
-//   result => {
-//     results_added = result.rows;
-//   });
-// }, 200);
+setInterval(function() {
+  client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
+  .then(
+  result => {
+    results_added = result.rows;
+  });
+}, 200);
 
 setInterval(() => {
   if (results_added.length > 0 ){
@@ -230,7 +230,6 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
           if(result.rows.length > 0) {
             lent = result.rows;
           }
-          console.log(profile_err);
           client.query('SELECT numLentTransactions($1)', [user_id], (err, result) => {
           var numLent = result.rows[0];
             client.query('SELECT averageLendingPrice($1)', [user_id], (err, result) => {
@@ -238,10 +237,10 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
               client.query('SELECT numBorrowTransactions($1)', [user_id], (err, result) => {
               var numBor = result.rows[0];
               res.render('profilepage', {errors: profile_err, user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed, numL: numLent,numB: numBor, avgLP: avgLendingPrice});
+              profile_err = undefined;
               });
             });
           });
-          profile_err = undefined;
         });
              });
       } else {

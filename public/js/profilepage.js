@@ -44,8 +44,8 @@ $(document).ready(()=> {
   });
 
   $('.edit-item').click(() => {
-    $('#edit-form-id').val(this.document.activeElement.dataset.id);
-    $('#edit-form-name').val(this.document.activeElement.dataset.name);
+    $('#edit-form-item_name').val(this.document.activeElement.dataset.name);
+    $('#edit-form-item_id').val(this.document.activeElement.dataset.id);
     $('#edit-form-description').val(this.document.activeElement.dataset.description);
     $('#edit-form-minPrice').val(this.document.activeElement.dataset.minprice);
     $('#edit-form-bidDur').val(this.document.activeElement.dataset.biddur);
