@@ -43,7 +43,7 @@
       {#items}
       <div class="col-sm-4 item">
         <a href="/item/{item_id}">
-          <img src="/images/dummy.png" id="icon">
+          <img src="{picture}" id="icon">
           <h4>{item_name}</h4>
         </a>
         <p>Description: {description}</p>

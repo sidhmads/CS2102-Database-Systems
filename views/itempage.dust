@@ -37,7 +37,7 @@
         <input hidden id="bid_start_date" value="{bid_start_date}" readonly></input>
         <input  hidden id="bid_duration" value="{bid_duration}" readonly></input>
         <input  hidden id="not_expired" value="{not_expired}" readonly></input>
-        <img src="/images/dummy.png" id="icon">
+        <img src="{picture}" id="icon">
         <h4>{item_name}</h4>
       </div>
     </div>

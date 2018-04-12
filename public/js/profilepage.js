@@ -43,6 +43,16 @@ $(document).ready(()=> {
     $('#edit-form-phone').val(this.document.activeElement.dataset.phone);
   });
 
+  $('.editImage').click(() => {
+    $('#edit-form-imageId').attr('name',this.document.activeElement.dataset.imageid);
+  });
+
+  $('.sendPic').click(() => {
+    var id = this.document.activeElement.name
+    var url = '/editItemImage/' + id;
+    document.getElementById("itemImageForm").action = url;
+  });
+
   $('.edit-item').click(() => {
     $('#edit-form-item_name').val(this.document.activeElement.dataset.name);
     $('#edit-form-item_id').val(this.document.activeElement.dataset.id);

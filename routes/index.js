@@ -41,7 +41,7 @@ setInterval(function() {
   result => {
     results_added = result.rows;
   });
-}, 200);
+}, 2000);
 
 setInterval(() => {
   if (results_added.length > 0 ){
@@ -67,7 +67,7 @@ setInterval(() => {
     results_added = {};
     ids = [];
 }
-}, 100);
+}, 1000);
 
 /* GET home page. */
 var loginFail = false;
@@ -228,7 +228,7 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
 
           });
 
-        client.query('SELECT bid_item_id, item_name, nickname, price_offered, days_requested,(price_offered * days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE B.self_selection = TRUE and B.user_id = $1',
+        client.query('SELECT bid_item_id, item_name, nickname, price_offered, days_requested,(price_offered * days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE B.self_selection = TRUE AND A.selected = FALSE AND B.user_id = $1',
         [user_id], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
@@ -279,6 +279,23 @@ router.post('/addItem', authenticationMiddleware(), (req, res) => {
   client.query('INSERT INTO public.item (item_name, description, min_price, bid_duration, lend_duration, category, user_id, date_of_creation, bid_start_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $8)',
     [req.body.item_name, req.body.description, req.body.min_price, req.body.bid_duration, req.body.lend_duration, req.body.category, user_id, new Date()]);
     res.redirect('/profile');
+});
+
+router.post('/editItemImage/:id', (req,res) => {
+  var fileName;
+  upload(req,res, (err) => {
+    if (req.file !== undefined) {
+      fileName = req.file.path
+      fileName = fileName.substring(fileName.indexOf("/"));
+      }
+    client.query('UPDATE public.item SET picture=$1 WHERE item_id=$2',
+        [fileName, req.params.id], (err,result) => {
+          console.log(err);
+          console.log("success");
+          console.log(fileName);
+        });
+    res.redirect('/profile');
+  });
 });
 
 //PROFILE PAGE
@@ -363,16 +380,16 @@ router.post('/editProfile', authenticationMiddleware(), (req, res) => {
 }
 });
 
-router.post('/editImage', authenticationMiddleware(), (req, res) => {
-  console.log(req.body);
-    client.query('UPDATE public."User" SET picture=$1 WHERE id=$2',
-    [(req.body.fileToUpload), user_id], (err,results) => {
-      if(err) {
-        console.log(err);
-      }
-      res.redirect('/profile');
-    });
-});
+// router.post('/editItemImage/:id', authenticationMiddleware(), (req, res) => {
+//   console.log(req.files);
+//     // client.query('UPDATE public.item SET picture=$1 WHERE id=$2',
+//     // [(req.file.path), req.params.id], (err,results) => {
+//     //   if(err) {
+//     //     console.log(err);
+//     //   }
+//     //   res.redirect('/profile');
+//     // });
+// });
 
 router.post('/editBid', authenticationMiddleware(), (req, res) => {
   console.log(req.body);
@@ -423,11 +440,19 @@ router.post('/placebid/:id', (req,res) => {
 router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
   // res.render('searchpage');
   // console.log(req.params.cat);
-  client.query('SELECT item_id, item_name, description, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE category = $1',
+  var item_details;
+  client.query('SELECT item_id, item_name, picture, description, (SELECT nickname FROM public."User" WHERE id = I.user_id) FROM public.item I WHERE category = $1',
     [req.params.cat], (err, result) => {
       if (err) throw err;
+      item_details = result.rows;
+      for (var i of item_details) {
+        if(i.picture === null) {
+          i.picture = "/images/dummy.png";
+        }
+      }
+      console.log(item_details);
       client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err, results) => {
-        res.render('searchpage', {category:req.params.cat, items: result.rows, user: results.rows[0]});
+        res.render('searchpage', {category:req.params.cat, items: item_details, user: results.rows[0]});
         });
     });
 });
@@ -435,12 +460,15 @@ router.get('/search/:cat', authenticationMiddleware(), (req, res) => {
 //ITEM DESCRIPTION PAGE
 router.get('/item/:id', authenticationMiddleware(), (req, res) => {
   //get item details
-  client.query('SELECT item_id, item_name, description,min_price,bid_duration,lend_duration,category, bid_start_date, not_expired, (SELECT nickname FROM public."User" WHERE id = I.user_id), user_id FROM public.item I WHERE item_id = $1',
+  client.query('SELECT item_id, item_name, picture, description,min_price,bid_duration,lend_duration,category, bid_start_date, not_expired, (SELECT nickname FROM public."User" WHERE id = I.user_id), user_id FROM public.item I WHERE item_id = $1',
     [req.params.id], (err, result) => {
       if (err) throw err;
       if (result.rows.length > 0) {
         var item_details = result.rows[0];
         item_details['current_id'] = user_id;
+        if(item_details.picture === null) {
+          item_details.picture = "/images/dummy.png";
+        }
         console.log(item_details);
         //get list of bidder details
         client.query('SELECT price_offered, bid_item_id, days_requested, date_of_bid,(SELECT nickname FROM public."User" WHERE id = B.borrower_id) FROM public."biddingItem" B WHERE item_id=$1',

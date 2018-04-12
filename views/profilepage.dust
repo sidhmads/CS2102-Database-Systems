@@ -40,7 +40,7 @@
     <div class="row">
       <div class="col-md-12">
         <h2><u>Profile</u></h2>
-        <img src="" class="img-rounded" height="200px">
+        <img src="/images/User_Avatar.png" class="img-rounded" height="200px">
         <table class="table">
           <tbody>
             <tr>
@@ -64,11 +64,6 @@
                 data-email="{email}"
                 data-phone="{number}"
                 >Edit Profile</button>
-        <br>
-        <button class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#editImageModal"
-                >Edit Image</button>
         <br>
         <button class="btn btn-primary"
                 data-toggle="modal"
@@ -104,31 +99,6 @@
       </div>
     </div>
 
-  </div>
-</div>
-
-<!-- Edit Image Modal -->
-<div class="modal fade" id="editImageModal" tabindex="-1" role="dialog" aria-labelledby="editImageModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form method="post" action="/editImage">
-        <input type='hidden' id="edit-form-id" name="id" />
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Edit Image</h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label>Profile Image</label>
-            <input type="file" name="fileToUpload" id="fileToUpload">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <input type="submit" class="btn btn-primary" value="Save"/>
-        </div>
-      </form>
-    </div>
   </div>
 </div>
 
@@ -199,6 +169,7 @@
               <th scope="col">Bidding Expired</th>
               <th scope="col">Mode of winning bid selection</th>
               <th scope="col">Date of Creation</th>
+              <th scope="col">Edit Image</th>
               <th scope="col">Edit</th>
               <th scope="col">Delete</th>
             </tr>
@@ -214,6 +185,11 @@
               <td>{expired}</td>
               <td>{self_selection}</td>
               <td>{date_of_creation}</td>
+              <td><button class="btn btn-primary editImage"
+                              data-toggle="modal"
+                              data-target="#editItemImageModal"
+                              data-imageId="{item_id}"
+                              >Edit Image</button></td>
               <td><button class="btn btn-warning edit-item"
                 data-toggle="modal"
                 data-target="#editFormModal"
@@ -235,6 +211,31 @@
       </div>
     </div>
   </div>
+
+  <!-- Edit Item Image Modal -->
+  <div class="modal fade" id="editItemImageModal" tabindex="-1" role="dialog" aria-labelledby="editItemImageModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="post" action="" enctype="multipart/form-data" id="itemImageForm">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Edit Image</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Profile Image</label>
+              <input type="file" name="image" id="image">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary sendPic" id="edit-form-imageId" name="" value="Save" readonly/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Form Modal -->
   <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
