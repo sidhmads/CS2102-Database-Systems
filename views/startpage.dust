@@ -23,11 +23,38 @@
             {/isadmin}
           {/user}
           <li><a href="/profile">Profile</a></li>
+          <li><a data-toggle="modal" data-target="#myModal">Stats</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
       </div>
     </div>
   </nav>
+
+  <!-- Modal -->
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Stat Board</h4>
+      </div>
+      <div class="modal-body">
+      {#price}
+        <p>Lender with highest suggested Prices: <span>{averagelendingprice}</span></p>
+        {/price}
+        <p>Lender with most transactions: <span>{}</span></p>        
+        <p>Borrower with most transactions: <span>{}</span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">

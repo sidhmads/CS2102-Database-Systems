@@ -168,7 +168,10 @@ router.get('/start', authenticationMiddleware(), (req, res) => {
   user_id = req.session.passport.user.id | req.session.passport.user
   console.log(user_id);
   client.query('SELECT isadmin FROM public."User" WHERE id = $1', [user_id], (err, result) => {
-    res.render('startpage', {user: result.rows[0]});
+    var userDetails = result.rows[0];
+    client.query('SELECT averageLendingPrice(11)',(err, result) => {
+      res.render('startpage', {user: userDetails, price: result.rows[0]});
+    });
   });
 });
 
@@ -228,7 +231,16 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
             lent = result.rows;
           }
           console.log(profile_err);
-          res.render('profilepage', {errors: profile_err, user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed});
+          client.query('SELECT numLentTransactions($1)', [user_id], (err, result) => {
+          var numLent = result.rows[0];
+            client.query('SELECT averageLendingPrice($1)', [user_id], (err, result) => {
+            var avgLendingPrice = result.rows[0];
+              client.query('SELECT numBorrowTransactions($1)', [user_id], (err, result) => {
+              var numBor = result.rows[0];
+              res.render('profilepage', {errors: profile_err, user: user_info, items: selling_items_info, bidding_items: bidding_items_info, manual_select: self_selected_items_info, transaction_lend: lent, transaction_borrow: borrowed, numL: numLent,numB: numBor, avgLP: avgLendingPrice});
+              });
+            });
+          });
           profile_err = undefined;
         });
              });
