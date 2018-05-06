@@ -1,29 +1,12 @@
 var pg = require('pg');
 const { Pool, Client } = require('pg')
 
-// const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
-// const client = new Client({
-//   connectionString: connectionString,
-// });
-// const pool = new Pool({
-//   connectionString: connectionString,
-// });
-
-var client = new pg.Client({
-    user: "zmoghsxduyicpd",
-    password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
-    database: "dbi701jafqoq2a",
-    port: 5432,
-    host: "ec2-174-129-221-240.compute-1.amazonaws.com",
-    ssl: 'require'
+const connectionString = 'postgresql://Admin:password@localhost/recipebookdb'; //for localhost
+const client = new Client({
+  connectionString: connectionString,
 });
-var pool = new pg.Pool({
-    user: "zmoghsxduyicpd",
-    password: "2985714f2e86972b1368556dcc23934ea117a5b3836f05e360535df61a87937f",
-    database: "dbi701jafqoq2a",
-    port: 5432,
-    host: "ec2-174-129-221-240.compute-1.amazonaws.com",
-    ssl: 'require'
+const pool = new Pool({
+  connectionString: connectionString,
 });
 
 

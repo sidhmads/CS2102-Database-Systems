@@ -21,6 +21,7 @@ var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 var results_added = {};
+var results_added_self = {};
 var x = 0;
 
 var transacted = [];
@@ -32,6 +33,10 @@ setInterval(function () {
   .then(
   result => {
     results_added = result.rows;
+    if (result.rows.length > 0) {
+      console.log("Hello from 1st function");
+      console.log(results_added);
+    }
   });
 }, 2000);
 
@@ -39,12 +44,16 @@ setInterval(function() {
   client.query('SELECT item_id as id, borrower_id, days_requested, (days_requested * price_offered) as earnings, date_of_bid FROM public."biddingItem" WHERE selected = True')
   .then(
   result => {
-    results_added = result.rows;
+    results_added_self = result.rows;
+    if (result.rows.length > 0) {
+      console.log("Hello from 2nd function");
+      console.log(results_added_self);
+    }
   });
 }, 2000);
 
 setInterval(() => {
-  if (results_added.length > 0 ){
+  if (results_added.length > 0  || results_added_self.length > 0){
     var ids = [];
     for (var i of results_added) {
       var endDate = new Date()
@@ -56,7 +65,18 @@ setInterval(() => {
       if (!(i in transacted)) {
         client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
         transacted.push(i);
-        console.log(i);
+      }
+    }
+    for (var i of results_added_self) {
+      var endDate = new Date()
+      endDate.setDate(endDate.getDate() + parseInt(i.days_requested));
+      var id = i.id;
+      ids.push(id);
+      var borrower_id = i.borrower_id;
+      var earnings = i.earnings;
+      if (!(i in transacted)) {
+        client.query('INSERT INTO public.transaction (item_id, borrower_id, start_date, end_date, earnings) VALUES ($1, $2, $3, $4, $5)', [id, borrower_id, new Date(), endDate, earnings] );
+        transacted.push(i);
       }
     }
     for (var i of ids) {
@@ -65,6 +85,7 @@ setInterval(() => {
       client.query('UPDATE public.item SET not_expired = FALSE, borrowed=TRUE WHERE item_id = $1', [i]);
     }
     results_added = {};
+    results_added_self = {};
     ids = [];
 }
 }, 1000);
@@ -228,8 +249,8 @@ router.get('/profile', authenticationMiddleware(), (req, res) => {
 
           });
 
-        client.query('SELECT bid_item_id, item_name, nickname, price_offered, days_requested,(price_offered * days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON B.user_id = C.id WHERE B.self_selection = TRUE AND A.selected = FALSE AND B.user_id = $1',
-        [user_id], (err, result) => {
+        client.query('SELECT bid_item_id, item_name, nickname, price_offered, days_requested,(price_offered * days_requested) AS earnings FROM public."biddingItem" AS A INNER JOIN public.item AS B ON A.item_id = B.item_id INNER JOIN public."User" AS C ON A.borrower_id = C.id WHERE B.self_selection = TRUE AND A.selected = FALSE',
+        [], (err, result) => {
           if (err) throw err;
           if(result.rows.length > 0) {
             self_selected_items_info = result.rows;//list
